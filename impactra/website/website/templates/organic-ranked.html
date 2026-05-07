@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Organic Ranking</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+    --bg-900:#050807;
+    --bg-850:#0a0e0c;
+    --bg-800:#0d1713;
+    --panel:#0f1916;
+    --panel-hi:#14191f;
+    --text:#e6f2ec;
+    --muted:#8aa29a;
+    --muted-strong:#a5bcb2;
+    --accent:#3d7c52;
+    --accent-strong:#4d9a63;
+    --accent-glow:rgba(77,154,99,0.4);
+    --border:rgba(140,180,165,0.18);
+    --glass:rgba(12,18,15,0.55);
+    --glass-border:rgba(110,200,170,0.2);
+    --blur-lg:32px;
+    --blur-md:24px;
+    --shadow:0 20px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(110,200,170,0.12);
+    --shadow-glow:0 0 40px rgba(95,184,146,0.22), inset 0 1px 0 rgba(110,200,170,0.15);
+    --radius:20px;
+    --transition:all 0.6s cubic-bezier(0.34,1.56,0.64,1);
+    --font-display:'Space Grotesk', sans-serif;
+    --font-body:'Plus Jakarta Sans', sans-serif;
+}
+
+body{
+    font-family:var(--font-body);
+    background:var(--bg-900);
+    min-height:100vh;
+    padding:24px 20px 60px;
+    color:var(--text);
+    position:relative;
+    overflow-x:hidden;
+}
+
+body::before{
+    content:'';
+    position:fixed;
+    inset:0;
+    background:
+        radial-gradient(ellipse 60% 50% at 15% 10%, rgba(79,158,111,0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 50% 60% at 85% 85%, rgba(31,106,74,0.22) 0%, transparent 70%),
+        linear-gradient(180deg, var(--bg-900), var(--bg-850));
+    pointer-events:none;
+    z-index:0;
+}
+
+body::after{
+    content:'';
+    position:fixed;
+    inset:0;
+    background-image:
+        linear-gradient(rgba(110,200,170,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(110,200,170,0.04) 1px, transparent 1px);
+    background-size:64px 64px;
+    pointer-events:none;
+    z-index:0;
+    mask-image:radial-gradient(circle at 50% 40%, black 30%, transparent 75%);
+}
+
+.nav-bar{
+    background:rgba(9,14,12,0.55);
+    backdrop-filter:blur(var(--blur-lg)) saturate(180%) brightness(1.08);
+    -webkit-backdrop-filter:blur(var(--blur-lg)) saturate(180%) brightness(1.08);
+    padding:16px 0;
+    position:sticky;
+    top:16px;
+    z-index:100;
+    box-shadow:var(--shadow);
+    border:1px solid var(--glass-border);
+    border-radius:18px;
+}
+
+.nav-bar a{
+    display:inline-block;
+    padding:9px 18px;
+    text-decoration:none;
+    color:rgba(230,242,236,0.72);
+    margin:0 6px;
+    border-radius:999px;
+    transition:all 0.35s cubic-bezier(0.2,0.9,0.2,1);
+    font-size:0.85rem;
+    letter-spacing:0.04em;
+    font-weight:600;
+    text-transform:uppercase;
+}
+
+.nav-bar a:hover,.nav-bar a.active{
+    background:rgba(111,199,155,0.16);
+    color:var(--text);
+    box-shadow:0 10px 24px rgba(111,199,155,0.2);
+}
+
+.container{max-width:860px;margin:0 auto;position:relative;z-index:1}
+
+.rank-header{
+    background:var(--glass);
+    border-radius:28px;
+    padding:34px 32px 30px;
+    margin:26px 0;
+    text-align:center;
+    box-shadow:var(--shadow);
+    border:1px solid var(--border);
+    backdrop-filter:blur(18px);
+}
+
+.rank-icon{font-size:3.6em;margin-bottom:6px}
+.rank-name{font-size:2.1em;font-weight:700;margin-bottom:12px;font-family:var(--font-display)}
+
+.progress-bar{
+    width:100%;
+    height:12px;
+    background:rgba(255,255,255,0.06);
+    border-radius:999px;
+    overflow:hidden;
+    margin:18px 0 12px;
+    border:1px solid rgba(255,255,255,0.06);
+}
+
+.progress-fill{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg, var(--accent), var(--accent-strong));
+    box-shadow:0 0 18px var(--accent-glow);
+    transition:0.5s;
+}
+
+.points-value{
+    font-size:2.8em;
+    font-weight:700;
+    color:var(--text);
+    margin-top:6px;
+}
+
+.game-area{text-align:center;}
+
+.game-area h1{
+    color:var(--text);
+    margin:30px 0 10px;
+    font-size:2.4em;
+    font-family:var(--font-display);
+    letter-spacing:-0.02em;
+}
+
+.streak-info{
+    color:var(--muted-strong);
+    font-size:1em;
+    margin-bottom:20px;
+}
+
+.waste-buttons{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:18px;
+}
+
+.waste-btn{
+    height:120px;
+    border:none;
+    border-radius:16px;
+    background:linear-gradient(160deg, rgba(25,38,31,0.9), rgba(19,30,24,0.9));
+    color:var(--text);
+    font-size:1rem;
+    font-weight:600;
+    cursor:pointer;
+    transition:all 0.35s cubic-bezier(0.2,0.9,0.2,1);
+    border:1px solid rgba(255,255,255,0.06);
+    box-shadow:0 10px 24px rgba(0,0,0,0.35);
+}
+
+.waste-btn:hover{
+    transform:translateY(-6px);
+    border-color:rgba(111,199,155,0.4);
+    box-shadow:0 16px 34px rgba(0,0,0,0.45), 0 0 22px rgba(111,199,155,0.2);
+}
+
+@media (max-width:720px){
+    .nav-bar{top:0;border-radius:16px}
+    .nav-bar a{padding:8px 14px;margin:4px 4px}
+    .rank-header{padding:28px 22px}
+}
+</style>
+</head>
+
+<body>
+
+<nav class="nav-bar">
+    <a href="ranked.html">Dashboard</a>
+    <a href="ewaste-ranked.html">E-Waste</a>
+    <a href="organic-ranked.html" class="active">Organic</a>
+    <a href="plastic-ranked.html">Plastic</a>
+    <a href="metal-ranked.html">Metal</a>
+    <a href="glass-ranked.html">Glass</a>
+</nav>
+
+<div class="container">
+
+<div class="rank-header">
+    <div id="rankIcon" class="rank-icon">🥉</div>
+    <div id="rankName" class="rank-name">Iron</div>
+
+    <div class="progress-bar">
+        <div id="progressFill" class="progress-fill"></div>
+    </div>
+
+    <div id="progressText">0 / 100</div>
+
+    <div id="totalPoints" class="points-value">0</div>
+    <div>Organic Points</div>
+</div>
+
+<main class="game-area">
+    <h1>Organic Waste</h1>
+    <p id="streakInfo" class="streak-info">Daily: 0 / 200</p>
+    <div id="wasteButtons" class="waste-buttons"></div>
+</main>
+
+</div>
+
+<script>
+
+const wasteType = "organic";
+
+const username = localStorage.getItem("username");
+
+// DAILY CAP
+let dailyCap = 200;
+let dailyPoints = 0;
+
+function fetchDailyCap(){
+    fetch(`/get_daily_cap_status?username=${username}`)
+    .then(res => res.json())
+    .then(data => {
+        dailyPoints = data.daily_points_today;
+        dailyCap = data.daily_cap;
+        updateDailyUI();
+    })
+    .catch(err => console.error(err));
+}
+
+const items = [
+    {name:'Veg Scraps',points:12,icon:''},
+    {name:'Fruit Peel',points:10,icon:''},
+    {name:'Egg Shells',points:8,icon:''},
+    {name:'Coffee Grounds',points:15,icon:''},
+    {name:'Garden Waste',points:18,icon:''}
+];
+
+const icons = {
+    'Iron':'I','Bronze':'B','Silver':'S','Gold':'G',
+    'Platinum':'P','Diamond':'D','Ascendant':'A',
+    'Immortal':'IM','Radiant':'R'
+};
+
+const ranks = {
+    'Iron':{min:0,max:99},
+    'Bronze':{min:100,max:249},
+    'Silver':{min:250,max:499},
+    'Gold':{min:500,max:999},
+    'Platinum':{min:1000,max:1499},
+    'Diamond':{min:1500,max:2499},
+    'Ascendant':{min:2500,max:3999},
+    'Immortal':{min:4000,max:5999},
+    'Radiant':{min:6000}
+};
+
+function getRank(points){
+    for(const rank in ranks){
+        if(points >= ranks[rank].min && (points <= ranks[rank].max || !ranks[rank].max)){
+            return rank;
+        }
+    }
+    return 'Iron';
+}
+
+function getNextRank(points){
+    const rankOrder = ['Iron','Bronze','Silver','Gold','Platinum','Diamond','Ascendant','Immortal','Radiant'];
+    const current = getRank(points);
+    const idx = rankOrder.indexOf(current);
+    return rankOrder[idx + 1] || null;
+}
+
+function init(){
+    createButtons();
+    fetchData();
+    fetchDailyCap();
+}
+
+function createButtons(){
+    const c = document.getElementById('wasteButtons');
+
+    items.forEach(i=>{
+        const b = document.createElement('button');
+        b.className = 'waste-btn';
+        b.innerHTML = `${i.icon} ${i.name}`;
+
+        b.onclick = () => attemptDispose(i);
+
+        c.appendChild(b);
+    });
+}
+
+function attemptDispose(item){
+
+    if (dailyPoints >= dailyCap) {
+        alert("Daily limit reached!");
+        return;
+    }
+
+    let gained = item.points;
+
+    if (dailyPoints + gained > dailyCap) {
+        gained = dailyCap - dailyPoints;
+    }
+
+    fetch('/api/update_ranking',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+            username: localStorage.getItem("username"),
+            organic_points: gained
+        })
+    })
+    .then(res => {
+        if (res.status === 429) {
+            return res.json().then(data => {
+                alert(`Daily cap (${data.daily_cap}) exceeded! Remaining: ${data.remaining}`);
+                fetchDailyCap();
+                throw new Error('Daily cap exceeded');
+            });
+        }
+        return res.json();
+    })
+    .then(data => {
+        if (data.success) {
+            dailyPoints = data.daily_points_today;
+            fetchData();
+            updateDailyUI();
+        }
+    })
+    .catch(err => console.error(err));
+}
+
+function addPoints(p){
+
+    fetch('/api/update_ranking',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+            username: localStorage.getItem("username"),
+            organic_points: p
+        })
+    })
+    .then(res => res.json())
+    .then(data => updateDisplay(data))
+    .catch(err => {
+        console.error(err);
+        alert("Server error");
+    });
+}
+
+function fetchData(){
+    fetch('/get_user_data?username=' + username)
+    .then(res=>res.json())
+    .then(data=>updateDisplay(data));
+}
+
+function updateDisplay(data){
+    const points = data.points !== undefined ? data.points : data.organic;
+    const rank = getRank(points);
+    const nextRank = getNextRank(points);
+    const currentMin = ranks[rank].min;
+    const nextMin = nextRank ? ranks[nextRank].min : currentMin;
+    const progress = nextRank
+        ? Math.min(100, ((points - currentMin) / (nextMin - currentMin)) * 100)
+        : 100;
+
+    document.getElementById('totalPoints').textContent = points;
+    document.getElementById('rankName').textContent = rank;
+    document.getElementById('rankIcon').textContent = icons[rank];
+
+    document.getElementById('progressFill').style.width = progress + "%";
+    document.getElementById('progressText').textContent =
+        points + " / " + (nextRank ? nextMin : "MAX");
+}
+
+function updateDailyUI(){
+    document.getElementById('streakInfo').textContent =
+        `Daily: ${dailyPoints} / ${dailyCap}`;
+}
+
+init();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SDG Knowledge Quiz</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --green-dark:   #1b5a40;
+    --green-mid:    #5fb892;
+    --green-light:  #7fd2b3;
+    --green-pale:   #c9f2de;
+    --white:        #e7f4ee;
+    --text-dark:    #e7f4ee;
+    --text-muted:   #9bb2a8;
+    --green-ok:     #5fb892;
+    --green-bg:     #0f1713;
+    --red-err:      #d46f63;
+    --red-bg:       #2a1210;
+    --glass-bg:     rgba(12, 18, 15, 0.55);
+    --glass-border: rgba(110, 200, 170, 0.2);
+    --blur-lg:      32px;
+    --blur-md:      24px;
+    --radius-card:  28px;
+    --radius-opt:   16px;
+    --shadow-card:  0 20px 60px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(110, 200, 170, 0.12);
+    --shadow-glow:  0 0 40px rgba(95, 184, 146, 0.22), inset 0 1px 0 rgba(110, 200, 170, 0.15);
+    --transition:   all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+
+  html, body {
+    min-height: 100%;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(180deg, #050807 0%, #0b110f 55%, #070b0a 100%);
+    background-attachment: fixed;
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 50px 20px 70px;
+    min-height: 100vh;
+    cursor: none;
+    scroll-behavior: smooth;
+  }
+
+  /* ── Header ── */
+  .site-header {
+    text-align: center;
+    margin-bottom: 40px;
+    animation: fadeDown 0.6s ease-out both;
+  }
+
+  .site-header .sdg-label {
+    display: inline-block;
+    background: rgba(167, 243, 208, 0.2);
+    color: #a7f3d0;
+    font-size: 11px;
+    font-weight: 650;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 7px 18px;
+    border-radius: 99px;
+    margin-bottom: 14px;
+    border: 1px solid rgba(167, 243, 208, 0.4);
+    backdrop-filter: blur(10px);
+  }
+
+  .site-header h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: clamp(28px, 6vw, 42px);
+    color: #f0fdf4;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.5px;
+    background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .site-header p {
+    color: var(--text-muted);
+    font-size: 1rem;
+    margin-top: 10px;
+    font-weight: 400;
+    opacity: 0.9;
+  }
+
+  /* ── Card ── */
+  .quiz-card {
+    background: rgba(15, 25, 21, 0.85);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    width: 100%;
+    max-width: 700px;
+    padding: 42px 40px 38px;
+    animation: fadeUp 0.6s ease-out both 0.1s;
+    border: 1px solid rgba(110, 200, 170, 0.18);
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(16px);
+  }
+
+  /* ── Progress ── */
+  .quiz-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 30px;
+  }
+
+  .progress-track {
+    flex: 1;
+    height: 6px;
+    background: rgba(167, 243, 208, 0.25);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #047857 0%, #059669 100%);
+    border-radius: 99px;
+    transition: width 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  }
+
+  .q-label {
+    font-size: 11px;
+    font-weight: 650;
+    color: var(--text-muted);
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  .score-pill {
+    background: linear-gradient(135deg, rgba(95, 184, 146, 0.15) 0%, rgba(127, 210, 179, 0.1) 100%);
+    color: var(--white);
+    font-size: 11px;
+    font-weight: 650;
+    padding: 6px 14px;
+    border-radius: 99px;
+    white-space: nowrap;
+    border: 1px solid rgba(95, 184, 146, 0.35);
+    letter-spacing: 0.3px;
+  }
+
+  /* ── SDG Tag ── */
+  .sdg-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, rgba(95, 184, 146, 0.18) 0%, rgba(127, 210, 179, 0.14) 100%);
+    color: var(--white);
+    font-size: 11px;
+    font-weight: 650;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 10px;
+    margin-bottom: 18px;
+    border: 1px solid rgba(95, 184, 146, 0.4);
+  }
+
+  .sdg-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #047857 0%, #059669 100%);
+    flex-shrink: 0;
+    box-shadow: 0 2px 6px rgba(4, 120, 87, 0.3);
+  }
+
+  /* ── Question ── */
+  .question-text {
+    font-family: 'Poppins', sans-serif;
+    font-size: clamp(18px, 3.5vw, 22px);
+    color: var(--text-dark);
+    line-height: 1.6;
+    margin-bottom: 28px;
+    font-weight: 650;
+    min-height: 60px;
+  }
+
+  /* ── Options ── */
+  .options-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .opt-btn {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 20px;
+    border: 1.5px solid rgba(110, 200, 170, 0.2);
+    border-radius: var(--radius-opt);
+    background: rgba(12, 20, 16, 0.85);
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    color: var(--white);
+    text-align: left;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    outline: none;
+    width: 100%;
+    font-weight: 500;
+  }
+
+  .opt-btn:hover:not(:disabled) {
+    border-color: rgba(95, 184, 146, 0.6);
+    background: rgba(18, 32, 26, 0.9);
+    transform: translateX(6px);
+    box-shadow: 0 4px 12px rgba(95, 184, 146, 0.15);
+  }
+
+  .opt-btn:active:not(:disabled) {
+    transform: translateX(4px) scale(0.98);
+  }
+
+  .opt-letter {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(110, 200, 170, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 650;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    background: rgba(10, 16, 14, 0.6);
+  }
+
+  .opt-btn.correct {
+    background: rgba(17, 34, 28, 0.9);
+    border-color: #5fb892;
+    box-shadow: 0 4px 12px rgba(95, 184, 146, 0.2);
+  }
+
+  .opt-btn.correct .opt-letter {
+    background: #5fb892;
+    border-color: #5fb892;
+    color: #0f1915;
+    box-shadow: 0 2px 8px rgba(95, 184, 146, 0.3);
+  }
+
+  .opt-btn.wrong {
+    background: rgba(42, 18, 16, 0.9);
+    border-color: #d46f63;
+    box-shadow: 0 4px 12px rgba(212, 111, 99, 0.2);
+  }
+
+  .opt-btn.wrong .opt-letter {
+    background: #d46f63;
+    border-color: #d46f63;
+    color: #0f1915;
+    box-shadow: 0 2px 8px rgba(212, 111, 99, 0.2);
+  }
+
+  .opt-btn.reveal {
+    background: rgba(17, 34, 28, 0.85);
+    border-color: #5fb892;
+    opacity: 0.8;
+  }
+
+  .opt-btn.reveal .opt-letter {
+    background: #5fb892;
+    border-color: #5fb892;
+    color: #0f1915;
+  }
+
+  /* ── Feedback ── */
+  .feedback {
+    margin-top: 18px;
+    min-height: 20px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 550;
+  }
+
+  .fb-icon {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .feedback.ok .fb-icon {
+    background: #047857;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(4, 120, 87, 0.3);
+  }
+
+  .feedback.ok {
+    color: #7fd2b3;
+  }
+
+  .feedback.bad .fb-icon {
+    background: #c0392b;
+    color: #fff;
+    box-shadow: 0 2px 6px rgba(192, 57, 43, 0.2);
+  }
+
+  .feedback.bad {
+    color: #d46f63;
+  }
+
+  /* ── Footer row ── */
+  .footer-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 26px;
+  }
+
+  .next-btn {
+    background: linear-gradient(135deg, #7fd2b3 0%, #5fb892 100%);
+    color: #0f1915;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 99px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    font-weight: 650;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    display: none;
+    letter-spacing: 0.3px;
+    box-shadow: 0 8px 20px rgba(95, 184, 146, 0.3);
+  }
+
+  .next-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(4, 120, 87, 0.35);
+  }
+
+  .next-btn:active:not(:disabled) {
+    transform: translateY(0px);
+  }
+
+  .next-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+
+  /* ── Result ── */
+  .result-screen {
+    display: none;
+    text-align: center;
+    padding: 12px 0 8px;
+  }
+
+  .result-circle {
+    width: 110px;
+    height: 110px;
+    border-radius: 50%;
+    margin: 0 auto 26px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Poppins', sans-serif;
+    font-size: 36px;
+    line-height: 1;
+    font-weight: 700;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+  }
+
+  .result-circle span.sub {
+    font-family: 'Poppins', sans-serif;
+    font-size: 11px;
+    font-weight: 650;
+    letter-spacing: 0.5px;
+    margin-top: 5px;
+    text-transform: uppercase;
+  }
+
+  .rc-great {
+    background: #dcfce7;
+    color: #047857;
+  }
+
+  .rc-ok {
+    background: #fef3c7;
+    color: #92400e;
+  }
+
+  .rc-low {
+    background: #fde8e6;
+    color: #c0392b;
+  }
+
+  .result-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 26px;
+    color: var(--text-dark);
+    margin-bottom: 10px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+  }
+
+  .result-sub {
+    font-size: 14px;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: 28px;
+    font-weight: 400;
+  }
+
+  .result-actions {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+  }
+
+  .btn-restart {
+    padding: 12px 32px;
+    border-radius: 99px;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1rem;
+    font-weight: 650;
+    cursor: pointer;
+    background: linear-gradient(135deg, #7fd2b3 0%, #5fb892 100%);
+    color: #0f1915;
+    border: none;
+    transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+    letter-spacing: 0.3px;
+    box-shadow: 0 8px 20px rgba(95, 184, 146, 0.3);
+  }
+
+  .btn-restart:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(4, 120, 87, 0.35);
+  }
+
+  .btn-restart:active {
+    transform: translateY(0px);
+  }
+
+  /* ── Divider ── */
+  .divider {
+    border: none;
+    border-top: 1px solid rgba(167, 243, 208, 0.25);
+    margin: 26px 0 0;
+  }
+
+  /* ── Animations ── */
+  @keyframes fadeDown {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeUp {
+    from {
+      opacity: 0;
+      transform: translateY(25px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Custom Cursor */
+  .cursor {
+    position: fixed;
+    width: 20px;
+    height: 20px;
+    background: rgba(167, 243, 208, 0.6);
+    border: 2px solid rgba(167, 243, 208, 0.8);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transition: transform 0.15s ease, width 0.15s ease, height 0.15s ease;
+    backdrop-filter: blur(8px);
+  }
+
+  .cursor.grow {
+    transform: scale(1.8);
+    width: 24px;
+    height: 24px;
+    background: rgba(167, 243, 208, 0.4);
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(4, 120, 87, 0.05);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(4, 120, 87, 0.3);
+    border-radius: 8px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(4, 120, 87, 0.5);
+  }
+
+  @media (max-width: 768px) {
+    body {
+      padding: 35px 16px 55px;
+    }
+
+    .site-header {
+      margin-bottom: 32px;
+    }
+
+    .quiz-card {
+      padding: 32px 28px 28px;
+      max-width: 100%;
+    }
+
+    .opt-btn {
+      padding: 14px 16px;
+      gap: 12px;
+    }
+
+    .opt-letter {
+      width: 30px;
+      height: 30px;
+      font-size: 11px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    body {
+      padding: 28px 14px 48px;
+    }
+
+    .site-header h1 {
+      font-size: 24px;
+    }
+
+    .site-header p {
+      font-size: 0.95rem;
+    }
+
+    .quiz-card {
+      padding: 24px 20px 22px;
+      border-radius: 20px;
+    }
+
+    .quiz-meta {
+      flex-direction: column;
+      gap: 12px;
+      align-items: stretch;
+    }
+
+    .progress-track {
+      order: -1;
+    }
+
+    .question-text {
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    .opt-btn {
+      padding: 12px 14px;
+      font-size: 0.95rem;
+    }
+
+    .next-btn {
+      width: 100%;
+      padding: 12px 20px;
+    }
+
+    .result-circle {
+      width: 90px;
+      height: 90px;
+      font-size: 28px;
+    }
+
+    .result-title {
+      font-size: 22px;
+    }
+
+    .btn-restart {
+      width: 100%;
+      padding: 12px 20px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+
+<header class="site-header">
+  <div class="sdg-label">United Nations · 2030 Agenda</div>
+  <h1>SDG Knowledge Quiz</h1>
+  <p>Test your knowledge across all 17 Sustainable Development Goals</p>
+</header>
+
+<div class="quiz-card" id="quizCard">
+  <!-- Main quiz view -->
+  <div id="mainView">
+    <div class="quiz-meta">
+      <div class="progress-track"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+      <span class="q-label" id="qLabel">1 / 10</span>
+      <span class="score-pill" id="scorePill">0 / 10</span>
+    </div>
+    <div class="sdg-tag"><span class="sdg-dot"></span><span id="sdgTag">SDG 1</span></div>
+    <p class="question-text" id="questionText">Loading…</p>
+    <div class="options-grid" id="optionsGrid"></div>
+    <div class="feedback" id="feedbackBar"></div>
+    <hr class="divider" />
+    <div class="footer-row">
+      <button class="next-btn" id="nextBtn">Next →</button>
+    </div>
+  </div>
+
+  <!-- Result screen -->
+  <div class="result-screen" id="resultScreen">
+    <div class="result-circle" id="resultCircle"></div>
+    <p class="result-title" id="resultTitle"></p>
+    <p class="result-sub"   id="resultSub"></p>
+    <div class="result-actions">
+      <button class="btn-restart" onclick="initQuiz()">Play Again</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+//  100 SDG QUESTIONS — 5–6 per goal (SDG 1–17)
+// ─────────────────────────────────────────────
+const ALL_QUESTIONS = [
+  // SDG 1 — No Poverty
+  { sdg:1, q:"What percentage of the world's population lived in extreme poverty in 2023?", opts:["About 8%","About 20%","About 35%","About 50%"], ans:"About 8%" },
+  { sdg:1, q:"The international extreme poverty line is set at income below ____ per day (2017 PPP).", opts:["$1.90","$2.15","$3.00","$5.00"], ans:"$2.15" },
+  { sdg:1, q:"Which SDG goal specifically aims to end poverty in all its forms everywhere?", opts:["SDG 2","SDG 1","SDG 10","SDG 3"], ans:"SDG 1" },
+  { sdg:1, q:"Which region has the highest concentration of people living in extreme poverty?", opts:["South Asia","Latin America","Sub-Saharan Africa","East Asia"], ans:"Sub-Saharan Africa" },
+  { sdg:1, q:"Social protection systems are highlighted in SDG 1 to cover the poor and the ____.", opts:["Elderly only","Vulnerable","Employed","Wealthy"], ans:"Vulnerable" },
+  { sdg:1, q:"SDG 1 calls for ending extreme poverty for all people everywhere by which year?", opts:["2025","2030","2035","2040"], ans:"2030" },
+
+  // SDG 2 — Zero Hunger
+  { sdg:2, q:"Approximately how many people were undernourished globally in 2022?", opts:["100 million","400 million","735 million","1 billion"], ans:"735 million" },
+  { sdg:2, q:"What does SDG 2 primarily aim to achieve?", opts:["Zero pollution","Zero Hunger","Zero waste","Zero deforestation"], ans:"Zero Hunger" },
+  { sdg:2, q:"Which practice is promoted in SDG 2 to ensure long-term food security?", opts:["Monoculture farming","Sustainable agriculture","Urban mining","Deep-sea fishing"], ans:"Sustainable agriculture" },
+  { sdg:2, q:"Stunting in children is primarily caused by chronic ____.", opts:["Malnutrition","Dehydration","Pollution","Obesity"], ans:"Malnutrition" },
+  { sdg:2, q:"SDG 2 calls for doubling the agricultural productivity of small-scale ____.", opts:["Corporations","Food producers","Governments","NGOs"], ans:"Food producers" },
+  { sdg:2, q:"Which global initiative under SDG 2 supports seed diversity and agro-biodiversity?", opts:["Paris Agreement","Svalbard Global Seed Vault","Kyoto Protocol","CITES"], ans:"Svalbard Global Seed Vault" },
+
+  // SDG 3 — Good Health and Well-being
+  { sdg:3, q:"What does SDG 3 aim to ensure for all people of all ages?", opts:["Employment","Healthy lives and well-being","Free education","Clean water"], ans:"Healthy lives and well-being" },
+  { sdg:3, q:"Universal Health Coverage (UHC) is a key target under which SDG?", opts:["SDG 1","SDG 4","SDG 3","SDG 10"], ans:"SDG 3" },
+  { sdg:3, q:"SDG 3 includes a target to end the epidemic of AIDS, tuberculosis, malaria and ____.", opts:["Diabetes","Neglected tropical diseases","Cancer","Hypertension"], ans:"Neglected tropical diseases" },
+  { sdg:3, q:"By 2030, SDG 3 aims to reduce the global maternal mortality ratio to fewer than ____ per 100,000 live births.", opts:["70","150","200","300"], ans:"70" },
+  { sdg:3, q:"Which disease was declared eradicated globally, a success celebrated under health goals?", opts:["Polio","Smallpox","Measles","Cholera"], ans:"Smallpox" },
+  { sdg:3, q:"Tobacco use is specifically addressed under SDG 3 through implementation of the ____ Framework Convention.", opts:["WHO FCTC","UNFCCC","Basel Convention","Rotterdam Convention"], ans:"WHO FCTC" },
+
+  // SDG 4 — Quality Education
+  { sdg:4, q:"SDG 4 aims to ensure inclusive and equitable quality education and promote ____ learning opportunities.", opts:["Lifelong","Online","Competitive","Private"], ans:"Lifelong" },
+  { sdg:4, q:"What percentage of children globally lack basic reading and mathematics skills by end of primary school?", opts:["10%","30%","50%","70%"], ans:"50%" },
+  { sdg:4, q:"Which target of SDG 4 focuses on pre-primary education?", opts:["4.1","4.2","4.5","4.7"], ans:"4.2" },
+  { sdg:4, q:"SDG 4 emphasizes that all girls and boys should complete free, equitable, and quality primary and secondary education resulting in relevant ____.", opts:["Employment","Learning outcomes","Certificates","Scholarships"], ans:"Learning outcomes" },
+  { sdg:4, q:"The Education for Sustainable Development (ESD) initiative supports which SDG?", opts:["SDG 13","SDG 4","SDG 8","SDG 17"], ans:"SDG 4" },
+  { sdg:4, q:"Gender parity in education is a specific target under SDG ____.", opts:["5","4","3","10"], ans:"4" },
+
+  // SDG 5 — Gender Equality
+  { sdg:5, q:"SDG 5 focuses on achieving gender equality and empowering all ____ and girls.", opts:["Children","Women","Elderly","Workers"], ans:"Women" },
+  { sdg:5, q:"Which harmful practice is targeted for elimination under SDG 5?", opts:["Child marriage","Deforestation","Fossil fuel use","Ocean pollution"], ans:"Child marriage" },
+  { sdg:5, q:"What share of parliamentary seats were held by women globally as of 2023?", opts:["About 10%","About 26%","About 40%","About 50%"], ans:"About 26%" },
+  { sdg:5, q:"Unpaid care and domestic work recognition is addressed in which SDG target?", opts:["5.1","5.4","5.5","5.a"], ans:"5.4" },
+  { sdg:5, q:"SDG 5 calls for women's full and effective participation and equal opportunities for ____ at all levels.", opts:["Sport","Leadership","Education","Housing"], ans:"Leadership" },
+  { sdg:5, q:"Technology access for women is emphasised under which SDG 5 target?", opts:["5.a","5.b","5.c","5.6"], ans:"5.b" },
+
+  // SDG 6 — Clean Water and Sanitation
+  { sdg:6, q:"How many people globally lacked access to safely managed drinking water as of 2022?", opts:["500 million","1 billion","2.2 billion","4 billion"], ans:"2.2 billion" },
+  { sdg:6, q:"SDG 6 aims to achieve universal access to safe and affordable ____ for all.", opts:["Housing","Drinking water","Internet","Food"], ans:"Drinking water" },
+  { sdg:6, q:"Open defecation is a sanitation issue specifically addressed under SDG ____.", opts:["3","6","11","13"], ans:"6" },
+  { sdg:6, q:"Which target under SDG 6 focuses on protecting and restoring water-related ecosystems?", opts:["6.1","6.3","6.6","6.b"], ans:"6.6" },
+  { sdg:6, q:"Water-use efficiency improvements are called for in SDG 6 target ____.", opts:["6.1","6.4","6.5","6.2"], ans:"6.4" },
+  { sdg:6, q:"Integrated Water Resources Management (IWRM) is referenced in SDG 6 target ____.", opts:["6.5","6.1","6.3","6.b"], ans:"6.5" },
+
+  // SDG 7 — Affordable and Clean Energy
+  { sdg:7, q:"What share of the global population lacked access to electricity in 2022?", opts:["About 5%","About 9%","About 20%","About 30%"], ans:"About 9%" },
+  { sdg:7, q:"SDG 7 calls for a substantial increase in the share of ____ energy in the global mix.", opts:["Nuclear","Renewable","Coal","Natural gas"], ans:"Renewable" },
+  { sdg:7, q:"Which sector consumes the most energy globally?", opts:["Agriculture","Transport","Industry","Residential"], ans:"Industry" },
+  { sdg:7, q:"Energy efficiency doubling is a specific target under SDG ____.", opts:["9","7","13","12"], ans:"7" },
+  { sdg:7, q:"The Sustainable Energy for All (SEforALL) initiative is linked to which SDG?", opts:["SDG 13","SDG 7","SDG 9","SDG 11"], ans:"SDG 7" },
+  { sdg:7, q:"Which renewable energy source is the fastest growing globally?", opts:["Wind","Geothermal","Solar","Hydro"], ans:"Solar" },
+
+  // SDG 8 — Decent Work and Economic Growth
+  { sdg:8, q:"SDG 8 promotes sustained, inclusive and sustainable economic growth and full and productive ____ for all.", opts:["Education","Employment","Healthcare","Housing"], ans:"Employment" },
+  { sdg:8, q:"What is the target annual GDP growth rate for least developed countries under SDG 8?", opts:["3%","5%","7%","10%"], ans:"7%" },
+  { sdg:8, q:"SDG 8 seeks to eradicate which practice by 2030?", opts:["Child labour","Water pollution","Deforestation","Marine litter"], ans:"Child labour" },
+  { sdg:8, q:"Decent work includes safe and secure working environments under SDG 8 target ____.", opts:["8.5","8.8","8.2","8.a"], ans:"8.8" },
+  { sdg:8, q:"Youth unemployment is specifically targeted in SDG 8 through the concept of ____.", opts:["NEET reduction","Land reform","Trade liberalisation","Financial exclusion"], ans:"NEET reduction" },
+  { sdg:8, q:"Which institution monitors international labour standards relevant to SDG 8?", opts:["IMF","ILO","WHO","WTO"], ans:"ILO" },
+
+  // SDG 9 — Industry, Innovation and Infrastructure
+  { sdg:9, q:"SDG 9 focuses on building resilient infrastructure, promoting inclusive industrialisation and fostering ____.", opts:["Tourism","Innovation","Agriculture","Mining"], ans:"Innovation" },
+  { sdg:9, q:"What percentage of the global population had internet access in 2023?", opts:["40%","66%","80%","92%"], ans:"66%" },
+  { sdg:9, q:"Small-scale industrial enterprises in developing countries are highlighted in SDG 9 target ____.", opts:["9.1","9.2","9.3","9.4"], ans:"9.3" },
+  { sdg:9, q:"SDG 9 calls for upgrading industries to make them sustainable with increased resource-use ____ by 2030.", opts:["Efficiency","Diversity","Output","Revenue"], ans:"Efficiency" },
+  { sdg:9, q:"Research and development (R&D) spending as a share of GDP is tracked under SDG ____.", opts:["8","9","10","17"], ans:"9" },
+  { sdg:9, q:"Which type of infrastructure is considered critical for SDG 9 in developing regions?", opts:["Space stations","Digital and transport","Luxury housing","Sports facilities"], ans:"Digital and transport" },
+
+  // SDG 10 — Reduced Inequalities
+  { sdg:10, q:"SDG 10 aims to reduce inequality ____ and among countries.", opts:["Within","Above","Below","Across"], ans:"Within" },
+  { sdg:10, q:"The Gini coefficient measures ____.", opts:["Carbon emissions","Economic inequality","Literacy rates","Biodiversity"], ans:"Economic inequality" },
+  { sdg:10, q:"Which target under SDG 10 calls for facilitating orderly, safe, and responsible migration?", opts:["10.2","10.5","10.7","10.c"], ans:"10.7" },
+  { sdg:10, q:"SDG 10 aims to ensure that income growth of the bottom ____ percent of the population is higher than the national average.", opts:["10","20","30","40"], ans:"40" },
+  { sdg:10, q:"Remittance transaction costs are targeted under SDG 10 target 10.c to be reduced to below ____.", opts:["5%","3%","10%","1%"], ans:"3%" },
+  { sdg:10, q:"Discriminatory laws and policies are to be eliminated under SDG 10 target ____.", opts:["10.1","10.3","10.5","10.6"], ans:"10.3" },
+
+  // SDG 11 — Sustainable Cities and Communities
+  { sdg:11, q:"By 2050, what share of the world's population is expected to live in urban areas?", opts:["50%","60%","68%","80%"], ans:"68%" },
+  { sdg:11, q:"SDG 11 aims to ensure access for all to adequate, safe and affordable ____ by 2030.", opts:["Food","Housing","Transport only","Education"], ans:"Housing" },
+  { sdg:11, q:"Which target under SDG 11 focuses on enhancing inclusive urbanisation?", opts:["11.1","11.3","11.5","11.b"], ans:"11.3" },
+  { sdg:11, q:"Slum upgrades are specifically addressed under SDG 11 target ____.", opts:["11.1","11.2","11.4","11.6"], ans:"11.1" },
+  { sdg:11, q:"Disaster risk reduction strategies are called for in SDG 11, referencing the ____ Framework.", opts:["Paris","Sendai","Kyoto","Doha"], ans:"Sendai" },
+  { sdg:11, q:"Cultural heritage protection is included in SDG 11 target ____.", opts:["11.1","11.4","11.6","11.3"], ans:"11.4" },
+
+  // SDG 12 — Responsible Consumption and Production
+  { sdg:12, q:"SDG 12 promotes sustainable consumption and production patterns, also known as the ____ economy.", opts:["Green","Circular","Blue","Gold"], ans:"Circular" },
+  { sdg:12, q:"The 10-Year Framework of Programmes on Sustainable Consumption and Production (10YFP) supports SDG ____.", opts:["7","12","14","11"], ans:"12" },
+  { sdg:12, q:"Food waste reduction at the retail and consumer level by half is targeted under SDG 12 target ____.", opts:["12.1","12.3","12.5","12.7"], ans:"12.3" },
+  { sdg:12, q:"Sustainable tourism is specifically referenced in SDG 12 target ____.", opts:["12.5","12.6","12.b","12.a"], ans:"12.b" },
+  { sdg:12, q:"Large companies are encouraged to adopt sustainable practices and integrate ____ reporting under SDG 12.", opts:["Financial","Sustainability","Competitor","Political"], ans:"Sustainability" },
+  { sdg:12, q:"The management of chemicals and wastes responsibly is part of SDG 12 target ____.", opts:["12.1","12.4","12.6","12.2"], ans:"12.4" },
+
+  // SDG 13 — Climate Action
+  { sdg:13, q:"The Paris Agreement aims to limit global temperature rise to well below ____ °C above pre-industrial levels.", opts:["1.0","1.5","2.0","3.0"], ans:"2.0" },
+  { sdg:13, q:"SDG 13 calls for strengthening resilience and adaptive capacity to climate-related ____ in all countries.", opts:["Industries","Hazards and disasters","Elections","Policies"], ans:"Hazards and disasters" },
+  { sdg:13, q:"Which UN body provides scientific assessments for SDG 13?", opts:["UNESCO","IPCC","WHO","FAO"], ans:"IPCC" },
+  { sdg:13, q:"The Green Climate Fund (GCF) was established to support which type of countries?", opts:["Developed only","Developing and vulnerable","Oil-producing","Island nations only"], ans:"Developing and vulnerable" },
+  { sdg:13, q:"SDG 13 includes climate change measures in national ____, strategies and planning.", opts:["Policies","Budgets only","Sports programmes","Art curricula"], ans:"Policies" },
+  { sdg:13, q:"Climate education and awareness are addressed in SDG 13 target ____.", opts:["13.1","13.2","13.3","13.a"], ans:"13.3" },
+
+  // SDG 14 — Life Below Water
+  { sdg:14, q:"SDG 14 aims to conserve and sustainably use the oceans, seas and marine resources for ____.", opts:["Tourism","Sustainable development","Energy production","Trade only"], ans:"Sustainable development" },
+  { sdg:14, q:"What percentage of the Earth's surface do oceans cover?", opts:["51%","61%","71%","81%"], ans:"71%" },
+  { sdg:14, q:"Ocean acidification is addressed in SDG 14 target ____.", opts:["14.1","14.2","14.3","14.5"], ans:"14.3" },
+  { sdg:14, q:"Harmful fisheries subsidies are to be eliminated by 2025 under SDG 14 target ____.", opts:["14.4","14.6","14.7","14.b"], ans:"14.6" },
+  { sdg:14, q:"Marine protected areas (MPAs) covering at least ____ percent of coastal and marine areas is a SDG 14 target.", opts:["5%","10%","15%","20%"], ans:"10%" },
+  { sdg:14, q:"Plastic pollution in oceans is a major concern under SDG 14; approximately how many million tonnes enter oceans annually?", opts:["1","8","20","50"], ans:"8" },
+
+  // SDG 15 — Life on Land
+  { sdg:15, q:"SDG 15 focuses on protecting, restoring and promoting sustainable use of terrestrial ____ and forests.", opts:["Industry","Ecosystems","Cities","Markets"], ans:"Ecosystems" },
+  { sdg:15, q:"How many species are estimated to be at risk of extinction globally?", opts:["100,000","500,000","1 million","2 million"], ans:"1 million" },
+  { sdg:15, q:"Desertification combat and land degradation neutrality are targeted in SDG 15 target ____.", opts:["15.1","15.3","15.5","15.9"], ans:"15.3" },
+  { sdg:15, q:"The Convention on Biological Diversity (CBD) is directly relevant to SDG ____.", opts:["13","14","15","16"], ans:"15" },
+  { sdg:15, q:"Poaching and trafficking of protected species is addressed under SDG 15 target ____.", opts:["15.4","15.7","15.9","15.a"], ans:"15.7" },
+  { sdg:15, q:"Forest coverage globally has declined, but SDG 15 target 15.2 aims to achieve ____ management of all types of forests.", opts:["Privatised","Sustainable","Industrial","Minimal"], ans:"Sustainable" },
+
+  // SDG 16 — Peace, Justice and Strong Institutions
+  { sdg:16, q:"SDG 16 promotes peaceful and inclusive societies for sustainable development and provides access to ____ for all.", opts:["Housing","Justice","Transport","Internet"], ans:"Justice" },
+  { sdg:16, q:"Reducing illicit financial flows is addressed under SDG 16 target ____.", opts:["16.1","16.4","16.6","16.10"], ans:"16.4" },
+  { sdg:16, q:"SDG 16 aims to end ____, exploitation, trafficking and all forms of violence against children.", opts:["Poverty","Abuse","Hunger","Inequality"], ans:"Abuse" },
+  { sdg:16, q:"Which institution supports the rule of law and access to justice under SDG 16?", opts:["WTO","International Court of Justice","IMF","OPEC"], ans:"International Court of Justice" },
+  { sdg:16, q:"Public access to information and protection of fundamental freedoms is covered under SDG 16 target ____.", opts:["16.3","16.7","16.10","16.b"], ans:"16.10" },
+  { sdg:16, q:"Corruption and bribery reduction are specifically targeted under SDG 16 target ____.", opts:["16.5","16.2","16.8","16.a"], ans:"16.5" },
+
+  // SDG 17 — Partnerships for the Goals
+  { sdg:17, q:"SDG 17 focuses on strengthening the means of implementation and revitalising the global ____ for sustainable development.", opts:["Trade","Partnership","Competition","Economy"], ans:"Partnership" },
+  { sdg:17, q:"Developed countries committed to achieving the target of ____ percent of GNI for Official Development Assistance (ODA).", opts:["0.3%","0.5%","0.7%","1.0%"], ans:"0.7%" },
+  { sdg:17, q:"The Addis Ababa Action Agenda is linked to financing for ____ under SDG 17.", opts:["Climate","Development","Migration","Security"], ans:"Development" },
+  { sdg:17, q:"Technology facilitation mechanism (TFM) is referenced in SDG 17 to support the transfer of ____ to developing countries.", opts:["Capital","Technology","Workers","Land"], ans:"Technology" },
+  { sdg:17, q:"Multi-stakeholder partnerships mobilising and sharing knowledge are highlighted in SDG 17 target ____.", opts:["17.6","17.9","17.16","17.19"], ans:"17.16" },
+  { sdg:17, q:"Data monitoring and accountability for SDG implementation are addressed in SDG 17 target ____.", opts:["17.14","17.17","17.18","17.19"], ans:"17.19" },
+];
+
+// ─────────────────────────────────────────────
+//  QUIZ ENGINE
+// ─────────────────────────────────────────────
+const SDG_NAMES = {
+  1:"No Poverty", 2:"Zero Hunger", 3:"Good Health & Well-being",
+  4:"Quality Education", 5:"Gender Equality", 6:"Clean Water & Sanitation",
+  7:"Affordable & Clean Energy", 8:"Decent Work & Economic Growth",
+  9:"Industry, Innovation & Infrastructure", 10:"Reduced Inequalities",
+  11:"Sustainable Cities & Communities", 12:"Responsible Consumption & Production",
+  13:"Climate Action", 14:"Life Below Water", 15:"Life on Land",
+  16:"Peace, Justice & Strong Institutions", 17:"Partnerships for the Goals"
+};
+
+let questions, idx, score, answered;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function initQuiz() {
+  questions = shuffle(ALL_QUESTIONS).slice(0, 10);
+  idx = 0; score = 0; answered = false;
+  document.getElementById('resultScreen').style.display = 'none';
+  document.getElementById('mainView').style.display = 'block';
+  document.getElementById('scorePill').textContent = '0 / 10';
+  document.getElementById('feedbackBar').innerHTML = '';
+  document.getElementById('nextBtn').style.display = 'none';
+  loadQuestion();
+}
+
+function loadQuestion() {
+  answered = false;
+  const q = questions[idx];
+  const total = questions.length;
+
+  document.getElementById('qLabel').textContent = `${idx + 1} / ${total}`;
+  document.getElementById('progressFill').style.width = `${(idx / total) * 100}%`;
+  document.getElementById('sdgTag').textContent = `SDG ${q.sdg} — ${SDG_NAMES[q.sdg]}`;
+  document.getElementById('questionText').textContent = q.q;
+  document.getElementById('feedbackBar').innerHTML = '';
+  document.getElementById('nextBtn').style.display = 'none';
+
+  const opts = shuffle(q.opts);
+  const letters = ['A','B','C','D'];
+  const grid = document.getElementById('optionsGrid');
+  grid.innerHTML = '';
+  opts.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.innerHTML = `<span class="opt-letter">${letters[i]}</span><span>${opt}</span>`;
+    btn.addEventListener('click', () => selectAnswer(opt, q.ans));
+    grid.appendChild(btn);
+  });
+}
+
+function selectAnswer(selected, correct) {
+  if (answered) return;
+  answered = true;
+  const isCorrect = selected === correct;
+  const btns = document.querySelectorAll('.opt-btn');
+  const fb = document.getElementById('feedbackBar');
+
+  btns.forEach(btn => {
+    btn.disabled = true;
+    const label = btn.querySelector('span:last-child').textContent;
+    if (label === correct && !isCorrect) btn.classList.add('reveal');
+    if (label === selected) btn.classList.add(isCorrect ? 'correct' : 'wrong');
+  });
+
+  if (isCorrect) {
+    score++;
+    document.getElementById('scorePill').textContent = `${score} / 10`;
+    fb.className = 'feedback ok';
+    fb.innerHTML = `<span class="fb-icon">✓</span><span>Correct!</span>`;
+  } else {
+    fb.className = 'feedback bad';
+    fb.innerHTML = `<span class="fb-icon">✗</span><span>Incorrect — correct answer: <strong>${correct}</strong></span>`;
+  }
+
+  const nb = document.getElementById('nextBtn');
+  nb.style.display = 'block';
+  nb.textContent = idx < questions.length - 1 ? 'Next →' : 'See Results';
+}
+
+document.getElementById('nextBtn').addEventListener('click', () => {
+  idx++;
+  if (idx < questions.length) loadQuestion();
+  else showResult();
+});
+
+function showResult() {
+  document.getElementById('mainView').style.display = 'none';
+  const rs = document.getElementById('resultScreen');
+  rs.style.display = 'block';
+
+  const pct = score / questions.length;
+  const ring = document.getElementById('resultCircle');
+  ring.innerHTML = `${score}<span class="sub">out of 10</span>`;
+  if (pct >= 0.8)       { ring.className = 'result-circle rc-great'; document.getElementById('resultTitle').textContent = 'Excellent work!'; }
+  else if (pct >= 0.5)  { ring.className = 'result-circle rc-ok';    document.getElementById('resultTitle').textContent = 'Good effort!'; }
+  else                  { ring.className = 'result-circle rc-low';   document.getElementById('resultTitle').textContent = 'Keep learning!'; }
+
+  document.getElementById('resultSub').textContent =
+    `You scored ${score} out of 10 questions. The quiz covered ${[...new Set(questions.map(q=>q.sdg))].map(s=>`SDG ${s}`).join(', ')}.`;
+}
+
+initQuiz();
+
+// Custom Cursor
+const cursor = document.getElementById('cursor');
+document.addEventListener('mousemove', (e) => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top = e.clientY + 'px';
+});
+
+document.querySelectorAll('button, a, input, select, textarea').forEach(el => {
+  el.addEventListener('mouseenter', () => cursor.classList.add('grow'));
+  el.addEventListener('mouseleave', () => cursor.classList.remove('grow'));
+});
+
+// Click ripple effect
+document.addEventListener('click', (e) => {
+  if (e.target.closest('nav a, button')) return; // Skip ripple on nav/buttons
+  
+  const ripple = document.createElement('div');
+  ripple.style.cssText = `
+    position: fixed;
+    left: ${e.clientX}px;
+    top: ${e.clientY}px;
+    width: 10px;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 9998;
+    animation: ripple 0.6s ease-out forwards;
+  `;
+  document.body.appendChild(ripple);
+  setTimeout(() => ripple.remove(), 600);
+});
+
+// Add ripple animation
+const style = document.createElement('style');
+style.textContent = `@keyframes ripple { to { transform: translate(-50%, -50%) scale(50); opacity: 0; } }`;
+document.head.appendChild(style);
+</script>
+</body>
+</html>

@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoRank Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base:        #050807;
+            --bg-surface:     #0a0e0c;
+            --bg-elevated:    #0d1713;
+            --bg-card:        #0f1916;
+
+            --green-deep:     #103524;
+            --green-forest:   #1f5a40;
+            --green-sage:     #5fb892;
+            --green-mint:     #7fd2b3;
+            --green-pale:     #c9f2de;
+
+            --earth-amber:    #c9a84c;
+            --earth-clay:     #8b5e3c;
+            --earth-stone:    #6b7c6e;
+
+            --text-primary:   #e7f4ee;
+            --text-secondary: #9bb2a8;
+            --text-muted:     #6f857b;
+            --text-dim:       #4d6158;
+
+            --border-subtle:  rgba(110, 200, 170, 0.15);
+            --border-glow:    rgba(110, 200, 170, 0.35);
+            --glass-bg:       rgba(12, 18, 15, 0.55);
+            --glass-bg-elevated: rgba(18, 26, 22, 0.45);
+            --glass-border:   rgba(127, 210, 179, 0.2);
+
+            --shadow-card:    0 15px 50px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(127, 210, 179, 0.12);
+            --shadow-glow:    0 0 45px rgba(95, 184, 146, 0.22), inset 0 1px 0 rgba(127, 210, 179, 0.15);
+
+            --ewaste-color:   #a0785a;
+            --organic-color:  #52b788;
+            --plastic-color:  #d4845a;
+            --metal-color:    #8fa8b8;
+            --glass-color:    #6ab0c8;
+
+            --radius-sm:      8px;
+            --radius-md:      14px;
+            --radius-lg:      20px;
+            --radius-xl:      28px;
+
+            --blur-lg:        32px;
+            --blur-md:        24px;
+            --blur-sm:        16px;
+
+            --transition:     all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            --font-ui:        'Outfit', sans-serif;
+            --font-mono:      'DM Mono', monospace;
+        }
+
+        *, *::before, *::after {
+            margin: 0; padding: 0;
+            box-sizing: border-box;
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-ui);
+            background-color: var(--bg-base);
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ─── Ambient Background ─────────────────────────────── */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 65% 55% at 12% 8%, rgba(54, 145, 110, 0.22) 0%, transparent 68%),
+                radial-gradient(ellipse 45% 65% at 88% 88%, rgba(30, 105, 78, 0.25) 0%, transparent 68%),
+                radial-gradient(ellipse 35% 35% at 50% 50%, rgba(95, 184, 146, 0.08) 0%, transparent 68%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Subtle grid texture */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(82,183,136,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(82,183,136,0.03) 1px, transparent 1px);
+            background-size: 52px 52px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ─── Layout ─────────────────────────────────────────── */
+        .container {
+            max-width: 1160px;
+            margin: 0 auto;
+            padding: 40px 24px 60px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ─── Sync Toast ─────────────────────────────────────── */
+        .sync-status {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background: var(--green-deep);
+            border: 1px solid var(--border-glow);
+            color: var(--green-mint);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            font-family: var(--font-mono);
+            letter-spacing: 0.03em;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4), 0 0 0 1px rgba(82,183,136,0.15);
+            transform: translateY(-80px) scale(0.95);
+            opacity: 0;
+            transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.3s ease;
+            z-index: 100;
+            backdrop-filter: blur(12px);
+        }
+        .sync-status.show {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+        .sync-status.error {
+            background: rgba(180,60,60,0.3);
+            border-color: rgba(220,80,80,0.3);
+            color: #f4a4a4;
+        }
+
+        /* ─── Header ─────────────────────────────────────────── */
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+            animation: fadeSlideDown 0.7s ease both;
+        }
+
+        .header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(82,183,136,0.08);
+            border: 1px solid rgba(82,183,136,0.18);
+            color: var(--green-sage);
+            font-size: 0.72rem;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            padding: 5px 14px;
+            border-radius: 50px;
+            margin-bottom: 20px;
+            font-family: var(--font-mono);
+        }
+        .header-badge::before {
+            content: '';
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--green-sage);
+            box-shadow: 0 0 8px var(--green-sage);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        h1 {
+            font-size: clamp(2.2rem, 5vw, 3.4rem);
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            background: linear-gradient(135deg, var(--green-pale) 0%, var(--green-mint) 40%, var(--earth-amber) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 12px;
+        }
+
+        .header-sub {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            letter-spacing: 0.01em;
+        }
+
+        /* ─── User Info Bar ───────────────────────────────────── */
+        .user-info {
+            display: none;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+            padding: 18px 28px;
+            border-radius: var(--radius-lg);
+            margin-bottom: 36px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            animation: fadeSlideDown 0.7s 0.15s ease both;
+        }
+
+        .user-avatar {
+            width: 42px; height: 42px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--green-forest), var(--green-deep));
+            border: 2px solid var(--border-glow);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .user-details {
+            flex: 1;
+        }
+
+        .username-display {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
+        }
+
+        .last-sync {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            margin-top: 2px;
+        }
+
+        .user-status-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--green-sage);
+            box-shadow: 0 0 10px var(--green-sage);
+            animation: pulse 2.5s ease-in-out infinite;
+            flex-shrink: 0;
+        }
+
+        /* ─── Waste Cards Grid ───────────────────────────────── */
+        .waste-type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 18px;
+            margin: 0 0 28px;
+        }
+
+        .waste-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-subtle);
+            padding: 28px 22px 24px;
+            border-radius: var(--radius-lg);
+            text-align: center;
+            text-decoration: none;
+            color: var(--text-primary);
+            box-shadow: var(--shadow-card);
+            transition: transform 0.3s cubic-bezier(0.34,1.4,0.64,1), box-shadow 0.3s ease, border-color 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            animation: fadeSlideUp 0.6s ease both;
+        }
+
+        .waste-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+            opacity: 0.85;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Subtle inner glow at bottom-right */
+        .waste-card::after {
+            content: '';
+            position: absolute;
+            bottom: -30px; right: -30px;
+            width: 120px; height: 120px;
+            border-radius: 50%;
+            opacity: 0;
+            filter: blur(40px);
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        .waste-card:hover {
+            transform: translateY(-6px) scale(1.02);
+            border-color: var(--border-glow);
+            box-shadow:
+                var(--shadow-card),
+                var(--shadow-glow);
+        }
+        .waste-card:hover::after { opacity: 1; }
+
+        /* Individual card accent colors */
+        .ewaste::before   { background: linear-gradient(90deg, var(--ewaste-color), #c8956a); }
+        .ewaste::after    { background: var(--ewaste-color); }
+        .ewaste:hover     { box-shadow: var(--shadow-card), 0 0 40px rgba(160,120,90,0.2); }
+
+        .organic::before  { background: linear-gradient(90deg, var(--organic-color), #74d4a2); }
+        .organic::after   { background: var(--organic-color); }
+        .organic:hover    { box-shadow: var(--shadow-card), 0 0 40px rgba(82,183,136,0.2); }
+
+        .plastic::before  { background: linear-gradient(90deg, var(--plastic-color), #e8a07a); }
+        .plastic::after   { background: var(--plastic-color); }
+        .plastic:hover    { box-shadow: var(--shadow-card), 0 0 40px rgba(212,132,90,0.2); }
+
+        .metal::before    { background: linear-gradient(90deg, var(--metal-color), #aac2d6); }
+        .metal::after     { background: var(--metal-color); }
+        .metal:hover      { box-shadow: var(--shadow-card), 0 0 40px rgba(143,168,184,0.2); }
+
+        .glass-card::before  { background: linear-gradient(90deg, var(--glass-color), #88ccde); }
+        .glass-card::after   { background: var(--glass-color); }
+        .glass-card:hover    { box-shadow: var(--shadow-card), 0 0 40px rgba(106,176,200,0.2); }
+
+        /* Staggered animation delays */
+        .waste-card:nth-child(1) { animation-delay: 0.1s; }
+        .waste-card:nth-child(2) { animation-delay: 0.18s; }
+        .waste-card:nth-child(3) { animation-delay: 0.26s; }
+        .waste-card:nth-child(4) { animation-delay: 0.34s; }
+        .waste-card:nth-child(5) { animation-delay: 0.42s; }
+
+        .card-icon {
+            font-size: 2.4rem;
+            display: block;
+            margin-bottom: 14px;
+            filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+            transition: transform 0.3s cubic-bezier(0.34,1.5,0.64,1);
+        }
+        .waste-card:hover .card-icon {
+            transform: scale(1.12) translateY(-2px);
+        }
+
+        .card-label {
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            margin-bottom: 8px;
+        }
+
+        .waste-card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
+            margin-bottom: 14px;
+        }
+
+        .card-divider {
+            width: 28px;
+            height: 1px;
+            background: var(--border-glow);
+            margin: 0 auto 14px;
+        }
+
+        .rank-display {
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--earth-amber);
+            letter-spacing: -0.01em;
+            margin-bottom: 4px;
+            font-family: var(--font-mono);
+        }
+
+        .points {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            font-weight: 500;
+        }
+
+        /* ─── Stats Panel ─────────────────────────────────────── */
+        .stats {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            backdrop-filter: blur(20px);
+            padding: 36px 40px;
+            border-radius: var(--radius-xl);
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0;
+            box-shadow: var(--shadow-card);
+            position: relative;
+            overflow: hidden;
+            animation: fadeSlideUp 0.6s 0.5s ease both;
+        }
+
+        .stats::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--green-sage), transparent);
+            opacity: 0.4;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 0 24px;
+            position: relative;
+        }
+
+        .stat-item + .stat-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 10%; bottom: 10%;
+            width: 1px;
+            background: var(--border-subtle);
+        }
+
+        .stat-label {
+            font-size: 0.68rem;
+            font-weight: 600;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            font-family: var(--font-mono);
+            margin-bottom: 8px;
+        }
+
+        #overallRank {
+            display: block;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--earth-amber);
+            letter-spacing: -0.03em;
+            line-height: 1;
+            font-family: var(--font-mono);
+        }
+
+        #totalPoints {
+            display: block;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--green-mint);
+            letter-spacing: -0.03em;
+            line-height: 1;
+            font-family: var(--font-mono);
+        }
+
+        .leaderboard-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--green-sage);
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            padding: 9px 20px;
+            border: 1px solid rgba(82,183,136,0.25);
+            border-radius: 50px;
+            transition: all 0.25s ease;
+            background: rgba(82,183,136,0.06);
+            margin-top: 6px;
+            display: inline-flex;
+        }
+        .leaderboard-link:hover {
+            background: rgba(82,183,136,0.14);
+            border-color: rgba(82,183,136,0.45);
+            color: var(--green-mint);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(82,183,136,0.15);
+        }
+
+        /* ─── Animations ──────────────────────────────────────── */
+        @keyframes fadeSlideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeSlideUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50%       { opacity: 0.5; transform: scale(0.85); }
+        }
+
+        /* ─── Loading state ───────────────────────────────────── */
+        .loading {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        /* ─── Responsive ──────────────────────────────────────── */
+        @media (max-width: 860px) {
+            .waste-type-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 28px;
+                padding: 28px 24px;
+            }
+            .stat-item + .stat-item::before {
+                display: none;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .waste-type-grid {
+                grid-template-columns: 1fr;
+            }
+            .container { padding: 24px 16px 48px; }
+            h1 { font-size: 2rem; }
+            .user-info { flex-direction: column; align-items: flex-start; gap: 10px; padding: 16px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="sync-status" id="syncStatus"></div>
+
+    <div class="container">
+
+        <!-- Header -->
+        <div class="header">
+            <div class="header-badge">Smart Waste Intelligence</div>
+            <h1>EcoRank Dashboard</h1>
+            <p class="header-sub">Master each waste category to climb the global ranks</p>
+        </div>
+
+        <!-- User Info -->
+        <div class="user-info" id="userInfo">
+            <div class="user-avatar">🌿</div>
+            <div class="user-details">
+                <div class="username-display" id="usernameDisplay">Loading...</div>
+                <div class="last-sync" id="lastSync">Never synced</div>
+            </div>
+            <div class="user-status-dot"></div>
+        </div>
+
+        <!-- Waste Type Cards -->
+        <div class="waste-type-grid">
+            <a href="ewaste-ranked.html" class="waste-card ewaste">
+                <span class="card-icon">EW</span>
+                <div class="card-label">Category</div>
+                <h3>E-Waste</h3>
+                <div class="card-divider"></div>
+                <div class="rank-display" id="ewasteRank">Loading…</div>
+                <div class="points" id="ewastePoints">0 pts</div>
+            </a>
+            <a href="organic-ranked.html" class="waste-card organic">
+                <span class="card-icon">OG</span>
+                <div class="card-label">Category</div>
+                <h3>Organic</h3>
+                <div class="card-divider"></div>
+                <div class="rank-display" id="organicRank">Loading…</div>
+                <div class="points" id="organicPoints">0 pts</div>
+            </a>
+            <a href="plastic-ranked.html" class="waste-card plastic">
+                <span class="card-icon">PL</span>
+                <div class="card-label">Category</div>
+                <h3>Plastic</h3>
+                <div class="card-divider"></div>
+                <div class="rank-display" id="plasticRank">Loading…</div>
+                <div class="points" id="plasticPoints">0 pts</div>
+            </a>
+            <a href="metal-ranked.html" class="waste-card metal">
+                <span class="card-icon">MT</span>
+                <div class="card-label">Category</div>
+                <h3>Metal</h3>
+                <div class="card-divider"></div>
+                <div class="rank-display" id="metalRank">Loading…</div>
+                <div class="points" id="metalPoints">0 pts</div>
+            </a>
+            <a href="glass-ranked.html" class="waste-card glass-card">
+                <span class="card-icon">GL</span>
+                <div class="card-label">Category</div>
+                <h3>Glass</h3>
+                <div class="card-divider"></div>
+                <div class="rank-display" id="glassRank">Loading…</div>
+                <div class="points" id="glassPoints">0 pts</div>
+            </a>
+        </div>
+
+        <!-- Stats Panel -->
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-label">Overall Rank</div>
+                <span id="overallRank">Iron</span>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Total Points</div>
+                <span id="totalPoints">0</span>
+            </div>
+            <div class="stat-item">
+                <div class="stat-label">Global Standing</div>
+                <a href="tierlist.html" class="leaderboard-link">
+                    View Leaderboard
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const ranks = {
+            'Iron':      { min: 0,    max: 99 },
+            'Bronze':    { min: 100,  max: 249 },
+            'Silver':    { min: 250,  max: 499 },
+            'Gold':      { min: 500,  max: 999 },
+            'Platinum':  { min: 1000, max: 1499 },
+            'Diamond':   { min: 1500, max: 2499 },
+            'Ascendant': { min: 2500, max: 3999 },
+            'Immortal':  { min: 4000, max: 5999 },
+            'Radiant':   { min: 6000 }
+        };
+
+        const syncStatus = document.getElementById('syncStatus');
+        const userInfo   = document.getElementById('userInfo');
+
+        function showSync(message, isError = false) {
+            syncStatus.textContent = message;
+            syncStatus.className = `sync-status show ${isError ? 'error' : ''}`;
+            setTimeout(() => syncStatus.classList.remove('show'), 3000);
+        }
+
+        function getRank(points) {
+            for (let rank in ranks) {
+                if (points >= ranks[rank].min && (points < ranks[rank].max || !ranks[rank].max)) {
+                    return rank;
+                }
+            }
+            return 'Iron';
+        }
+
+        async function fetchUserData() {
+            const username = localStorage.getItem('username');
+            if (!username) {
+                console.warn('No username found');
+                return null;
+            }
+            try {
+                const response = await fetch(`/get_user_data?username=${username}`);
+                const data = await response.json();
+                if (data.error) throw new Error(data.error);
+                return data;
+            } catch (err) {
+                console.error('Fetch failed:', err);
+                showSync('❌ Failed to fetch data', true);
+                return null;
+            }
+        }
+
+        async function updateRanked() {
+            const data = await fetchUserData();
+            if (!data) return;
+
+            const types   = ['ewaste', 'organic', 'plastic', 'metal', 'glass'];
+            let total      = 0;
+            const username = localStorage.getItem('username');
+
+            types.forEach(type => {
+                const points = data[type] || 0;
+                total += points;
+                document.getElementById(type + 'Points').textContent = points.toLocaleString() + ' pts';
+                document.getElementById(type + 'Rank').textContent   = getRank(points);
+            });
+
+            document.getElementById('totalPoints').textContent  = total.toLocaleString();
+            document.getElementById('overallRank').textContent  = getRank(total);
+            document.getElementById('usernameDisplay').textContent = `Player: ${username}`;
+            userInfo.style.display = 'flex';
+            document.getElementById('lastSync').textContent =
+                `Last sync: ${new Date().toLocaleTimeString()}`;
+        }
+
+        async function addPoints(type, amount) {
+            const username = localStorage.getItem('username');
+            if (!username) return;
+            try {
+                const res = await fetch('/update_points', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, [type]: amount })
+                });
+                const data = await res.json();
+                if (data.success) {
+                    showSync(`+${amount} ${type} points`);
+                    updateRanked();
+                } else {
+                    throw new Error('Update failed');
+                }
+            } catch (err) {
+                console.error(err);
+                showSync('❌ Update failed', true);
+            }
+        }
+
+        // Auto load
+        updateRanked();
+
+        // Auto refresh every 10s
+        setInterval(updateRanked, 10000);
+
+        // Refresh when tab becomes active
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) updateRanked();
+        });
+    </script>
+</body>
+</html>

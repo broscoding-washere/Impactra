@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard — EcoTrack</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+
+    <style>
+        /* ─── Design Tokens ───────────────────────────────────────────── */
+        :root {
+            --c-bg:           #050807;
+            --c-bg2:          #0a0e0c;
+            --c-panel:        rgba(12,18,15,0.55);
+            --c-panel-solid:  #0d1713;
+            --c-panel-hi:     #12191a;
+            --c-border:       rgba(110,200,170,0.18);
+            --c-border-hi:    rgba(110,200,170,0.35);
+            --c-green-deep:   #0f3a29;
+            --c-green-mid:    #1b5a40;
+            --c-green-light:  #7fd2b3;
+            --c-green-glow:   rgba(127,210,179,0.4);
+            --c-sage:         #9ec6b3;
+            --c-sage-muted:   rgba(158,198,179,0.55);
+            --c-earth:        #b58d5c;
+            --c-text-primary: #e7f4ee;
+            --c-text-muted:   #92a9a0;
+            --c-text-dim:     #5f756c;
+            --c-white:        #ffffff;
+
+            /* Medal tiers — kept earthy, no neon */
+            --c-gold:         #c9a84c;
+            --c-gold-glow:    rgba(201,168,76,0.4);
+            --c-silver:       #9eaead;
+            --c-silver-glow:  rgba(158,174,173,0.35);
+            --c-bronze:       #a0714f;
+            --c-bronze-glow:  rgba(160,113,79,0.35);
+
+            --glass-bg:       rgba(12, 18, 15, 0.55);
+            --glass-border:   rgba(110, 200, 170, 0.2);
+            --blur-lg:        32px;
+            --blur-md:        24px;
+            --shadow-panel:   0 30px 90px rgba(0,0,0,0.55), inset 0 1px 0 rgba(110,200,170,0.15);
+            --shadow-card:    0 15px 50px rgba(0,0,0,0.35), inset 0 1px 0 rgba(110,200,170,0.12);
+            --shadow-glow:    0 0 45px rgba(95,184,146,0.22), inset 0 1px 0 rgba(110,200,170,0.15);
+            --transition:     all 0.6s cubic-bezier(0.34,1.56,0.64,1);
+            --font-display:   'Syne', sans-serif;
+            --font-body:      'DM Sans', sans-serif;
+        }
+            
+        /* ─── Reset ────────────────────────────────────────────────────── */
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--c-bg);
+            color: var(--c-text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        /* ─── Ambient Background ──────────────────────────────────────── */
+        .bg-scene {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .bg-scene::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 60% 55% at 10% 90%, rgba(30,92,53,0.32) 0%, transparent 65%),
+                radial-gradient(ellipse 45% 45% at 90% 5%,  rgba(42,122,73,0.18) 0%, transparent 60%);
+        }
+
+        .bg-scene::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(74,171,109,0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(74,171,109,0.035) 1px, transparent 1px);
+            background-size: 52px 52px;
+            mask-image: radial-gradient(ellipse 90% 90% at 50% 50%, black 30%, transparent 80%);
+        }
+
+        .orb {
+            position: fixed;
+            border-radius: 50%;
+            filter: blur(90px);
+            pointer-events: none;
+            animation: orb-drift 14s ease-in-out infinite alternate;
+        }
+        .orb-1 { width:500px; height:500px; bottom:-120px; left:-100px;
+                  background: radial-gradient(circle, rgba(30,92,53,0.28) 0%, transparent 70%); }
+        .orb-2 { width:320px; height:320px; top:-60px; right:-60px;
+                  background: radial-gradient(circle, rgba(42,122,73,0.2) 0%, transparent 70%);
+                  animation-delay: -5s; }
+
+        @keyframes orb-drift {
+            from { transform: translate(0,0); }
+            to   { transform: translate(25px,-35px) scale(1.08); }
+        }
+
+        /* ─── Custom Cursor ──────────────────────────────────────────── */
+        .cursor {
+            position: fixed;
+            width: 18px; height: 18px;
+            border: 1.5px solid var(--c-green-light);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transition: transform 0.12s ease, width 0.2s, height 0.2s;
+            transform: translate(-50%, -50%);
+            mix-blend-mode: normal;
+        }
+
+        .cursor::after {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            border-radius: 50%;
+            background: rgba(74,171,109,0.5);
+        }
+
+        .cursor.grow {
+            width: 30px; height: 30px;
+            border-color: var(--c-green-light);
+        }
+
+        /* ─── Layout Wrapper ─────────────────────────────────────────── */
+        .container {
+            position: relative;
+            z-index: 5;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 40px 24px 80px;
+        }
+
+        /* ─── Header ─────────────────────────────────────────────────── */
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+            opacity: 0;
+            animation: fadeUp 0.8s 0.1s forwards;
+        }
+
+        .header-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(42,122,73,0.15);
+            border: 1px solid var(--c-border-hi);
+            border-radius: 100px;
+            padding: 5px 14px 5px 10px;
+            margin-bottom: 18px;
+        }
+
+        .header-eyebrow-dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--c-green-light);
+            box-shadow: 0 0 8px var(--c-green-light);
+            animation: pulse-dot 2.5s ease-in-out infinite;
+        }
+
+        .header-eyebrow span {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--c-sage);
+        }
+
+        @keyframes pulse-dot {
+            0%,100% { opacity:1; box-shadow: 0 0 8px var(--c-green-light); }
+            50%      { opacity:0.45; box-shadow: 0 0 3px var(--c-green-light); }
+        }
+
+        .header h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2rem, 5vw, 3.2rem);
+            font-weight: 800;
+            color: var(--c-text-primary);
+            letter-spacing: -1px;
+            line-height: 1.05;
+            margin-bottom: 8px;
+        }
+
+        .header h1 .accent { color: var(--c-green-light); }
+
+        .header-sub {
+            font-size: 14px;
+            font-weight: 300;
+            color: var(--c-text-muted);
+            letter-spacing: 0.2px;
+        }
+
+        /* ─── Controls Bar ───────────────────────────────────────────── */
+        .controls {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 28px;
+            flex-wrap: wrap;
+            opacity: 0;
+            animation: fadeUp 0.8s 0.25s forwards;
+        }
+
+        .search-container {
+            position: relative;
+            flex: 1;
+            max-width: 420px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--c-text-dim);
+            pointer-events: none;
+            transition: color var(--transition);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 13px 18px 13px 46px;
+            background: var(--c-panel);
+            border: 1px solid var(--c-border);
+            border-radius: var(--radius-md);
+            color: var(--c-text-primary);
+            font-family: var(--font-body);
+            font-size: 14px;
+            font-weight: 400;
+            backdrop-filter: blur(16px);
+            transition: border-color var(--transition), box-shadow var(--transition), background var(--transition);
+            outline: none;
+        }
+
+        .search-input::placeholder { color: var(--c-text-dim); font-weight: 300; }
+
+        .search-input:focus {
+            border-color: var(--c-green-mid);
+            background: rgba(22,39,27,0.9);
+            box-shadow: 0 0 0 3px rgba(42,122,73,0.15);
+        }
+
+        .search-container:focus-within .search-icon { color: var(--c-green-light); }
+
+        .refresh-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 13px 24px;
+            background: linear-gradient(135deg, var(--c-green-mid), var(--c-green-deep));
+            border: 1px solid rgba(74,171,109,0.3);
+            border-radius: var(--radius-md);
+            color: var(--c-white);
+            font-family: var(--font-body);
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: var(--shadow-btn);
+            transition: all var(--transition);
+            white-space: nowrap;
+        }
+
+        .refresh-btn svg { transition: transform 0.5s ease; }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 28px rgba(42,122,73,0.6);
+        }
+
+        .refresh-btn:hover svg { transform: rotate(180deg); }
+        .refresh-btn:active { transform: translateY(0); }
+
+        /* ─── Column Header ──────────────────────────────────────────── */
+        .list-header {
+            display: grid;
+            grid-template-columns: 64px 52px 1fr auto;
+            align-items: center;
+            gap: 16px;
+            padding: 0 20px 12px;
+            border-bottom: 1px solid var(--c-border);
+            margin-bottom: 12px;
+            opacity: 0;
+            animation: fadeUp 0.8s 0.35s forwards;
+        }
+
+        .list-header span {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1.8px;
+            text-transform: uppercase;
+            color: var(--c-text-dim);
+        }
+
+        .list-header .col-points { text-align: right; padding-right: 4px; }
+
+        /* ─── Leaderboard List ───────────────────────────────────────── */
+        .leaderboard {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            max-height: 68vh;
+            overflow-y: auto;
+            padding-right: 6px;
+            padding-bottom: 4px;
+            opacity: 0;
+            animation: fadeUp 0.8s 0.4s forwards;
+        }
+
+        /* Scrollbar */
+        .leaderboard::-webkit-scrollbar { width: 5px; }
+        .leaderboard::-webkit-scrollbar-track { background: rgba(74,171,109,0.04); border-radius: 3px; }
+        .leaderboard::-webkit-scrollbar-thumb { background: var(--c-green-deep); border-radius: 3px; }
+
+        /* ─── Player Row ────────────────────────────────────────────── */
+        .player-row {
+            display: grid;
+            grid-template-columns: 64px 52px 1fr auto;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            background: var(--c-panel);
+            backdrop-filter: blur(14px);
+            border: 1px solid var(--c-border);
+            border-radius: var(--radius-md);
+            transition: transform var(--transition), background var(--transition),
+                        border-color var(--transition), box-shadow var(--transition);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideUp 0.5s ease forwards;
+            cursor: default;
+        }
+
+        /* Staggered animation */
+        .player-row:nth-child(1)  { animation-delay: 0.05s; }
+        .player-row:nth-child(2)  { animation-delay: 0.10s; }
+        .player-row:nth-child(3)  { animation-delay: 0.15s; }
+        .player-row:nth-child(4)  { animation-delay: 0.20s; }
+        .player-row:nth-child(5)  { animation-delay: 0.25s; }
+        .player-row:nth-child(6)  { animation-delay: 0.28s; }
+        .player-row:nth-child(7)  { animation-delay: 0.31s; }
+        .player-row:nth-child(8)  { animation-delay: 0.34s; }
+        .player-row:nth-child(9)  { animation-delay: 0.37s; }
+        .player-row:nth-child(10) { animation-delay: 0.40s; }
+
+        @keyframes slideUp {
+            to { opacity:1; transform:translateY(0); }
+        }
+
+        .player-row:hover {
+            transform: translateY(-3px);
+            background: rgba(28,49,34,0.92);
+            border-color: var(--c-border-hi);
+            box-shadow: 0 12px 36px rgba(0,0,0,0.35);
+        }
+
+        /* Medal rows */
+        .player-row.top-1 {
+            background: linear-gradient(135deg, rgba(201,168,76,0.12) 0%, rgba(22,39,27,0.85) 60%);
+            border-color: rgba(201,168,76,0.35);
+            box-shadow: 0 4px 24px var(--c-gold-glow);
+        }
+        .player-row.top-2 {
+            background: linear-gradient(135deg, rgba(158,174,173,0.1) 0%, rgba(22,39,27,0.85) 60%);
+            border-color: rgba(158,174,173,0.3);
+            box-shadow: 0 4px 24px var(--c-silver-glow);
+        }
+        .player-row.top-3 {
+            background: linear-gradient(135deg, rgba(160,113,79,0.12) 0%, rgba(22,39,27,0.85) 60%);
+            border-color: rgba(160,113,79,0.3);
+            box-shadow: 0 4px 24px var(--c-bronze-glow);
+        }
+
+        /* ─── Rank Position ──────────────────────────────────────────── */
+        .rank-position {
+            font-family: var(--font-display);
+            font-size: 1.4rem;
+            font-weight: 800;
+            text-align: center;
+            color: var(--c-text-dim);
+            letter-spacing: -1px;
+            min-width: 0;
+        }
+
+        .top-1 .rank-position { color: var(--c-gold);   text-shadow: 0 0 14px var(--c-gold-glow); }
+        .top-2 .rank-position { color: var(--c-silver); text-shadow: 0 0 12px var(--c-silver-glow); }
+        .top-3 .rank-position { color: var(--c-bronze); text-shadow: 0 0 12px var(--c-bronze-glow); }
+
+        /* ─── Avatar ─────────────────────────────────────────────────── */
+        .avatar {
+            width: 44px; height: 44px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--c-white);
+            box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+            flex-shrink: 0;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        /* ─── Player Info ────────────────────────────────────────────── */
+        .player-info {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 0;
+        }
+
+        .username {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--c-text-primary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            letter-spacing: -0.2px;
+        }
+
+        .rank-points {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* ─── Rank Badge ─────────────────────────────────────────────── */
+        .rank-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        /* Tier colours — earthy, no neon */
+        .rank-Iron     { background: rgba(90,90,90,0.25);    color: #b0b0b0;       border: 1px solid rgba(120,120,120,0.35); }
+        .rank-Bronze   { background: rgba(160,113,79,0.2);   color: #c4895e;       border: 1px solid rgba(160,113,79,0.4); }
+        .rank-Silver   { background: rgba(158,174,173,0.18); color: #b0c0bf;       border: 1px solid rgba(158,174,173,0.35); }
+        .rank-Gold     { background: rgba(201,168,76,0.18);  color: #d4a84b;       border: 1px solid rgba(201,168,76,0.4); box-shadow: 0 0 8px rgba(201,168,76,0.2); }
+        .rank-Platinum { background: rgba(110,200,180,0.15); color: #7ec8b8;       border: 1px solid rgba(110,200,180,0.3); }
+        .rank-Diamond  { background: rgba(100,170,220,0.15); color: #78b4d8;       border: 1px solid rgba(100,170,220,0.35); }
+        .rank-Ascendant{ background: rgba(74,171,109,0.18);  color: var(--c-green-light); border: 1px solid rgba(74,171,109,0.38); box-shadow: 0 0 8px rgba(74,171,109,0.2); }
+        .rank-Immortal { background: rgba(180,80,80,0.18);   color: #d97070;       border: 1px solid rgba(180,80,80,0.38); }
+        .rank-Radiant  { background: linear-gradient(90deg, rgba(201,168,76,0.22), rgba(74,171,109,0.22));
+                         color: #e8c96a;
+                         border: 1px solid rgba(201,168,76,0.5);
+                         box-shadow: 0 0 12px rgba(201,168,76,0.28);
+                         text-shadow: 0 0 8px rgba(201,168,76,0.5); }
+
+        /* ─── Points ─────────────────────────────────────────────────── */
+        .points {
+            font-family: var(--font-display);
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: var(--c-green-light);
+            text-align: right;
+            white-space: nowrap;
+            letter-spacing: -0.5px;
+        }
+
+        .points-label {
+            display: block;
+            font-size: 9px;
+            font-weight: 500;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--c-text-dim);
+            text-align: right;
+            margin-top: 2px;
+        }
+
+        /* ─── Loading State ──────────────────────────────────────────── */
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 14px;
+            height: 200px;
+            font-size: 14px;
+            color: var(--c-text-muted);
+            font-weight: 400;
+        }
+
+        .spinner {
+            width: 28px; height: 28px;
+            border: 2px solid var(--c-border);
+            border-top-color: var(--c-green-light);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ─── No Results ─────────────────────────────────────────────── */
+        .no-results {
+            text-align: center;
+            padding: 64px 20px;
+            color: var(--c-text-muted);
+            font-size: 14px;
+            font-weight: 300;
+        }
+
+        .no-results-icon {
+            width: 48px; height: 48px;
+            margin: 0 auto 16px;
+            opacity: 0.3;
+            stroke: var(--c-sage);
+            fill: none;
+            stroke-width: 1.4;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* ─── Fade/slide animation ───────────────────────────────────── */
+        @keyframes fadeUp {
+            from { opacity:0; transform:translateY(14px); }
+            to   { opacity:1; transform:translateY(0); }
+        }
+
+        /* ─── Ripple ─────────────────────────────────────────────────── */
+        @keyframes ripple { to { transform: translate(-50%,-50%) scale(50); opacity:0; } }
+
+        /* ─── Responsive ─────────────────────────────────────────────── */
+        @media (max-width: 640px) {
+            .container { padding: 28px 14px 60px; }
+            .header h1 { letter-spacing: -0.5px; }
+            .list-header { display: none; }
+            .player-row {
+                grid-template-columns: 44px 40px 1fr auto;
+                gap: 10px;
+                padding: 14px 14px;
+            }
+            .rank-position { font-size: 1rem; }
+            .avatar { width: 38px; height: 38px; font-size: 0.9rem; border-radius: 10px; }
+            .username { font-size: 0.9rem; }
+            .points { font-size: 0.9rem; }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Ambient background -->
+    <div class="bg-scene">
+        <div class="orb orb-1"></div>
+        <div class="orb orb-2"></div>
+    </div>
+
+    <!-- Custom cursor -->
+    <div class="cursor" id="cursor"></div>
+
+    <div class="container">
+
+        <!-- ── Header ── -->
+        <div class="header">
+            <div class="header-eyebrow">
+                <div class="header-eyebrow-dot"></div>
+                <span>Live Rankings</span>
+            </div>
+            <h1>Leader<span class="accent">board</span></h1>
+            <p class="header-sub">Top 50 contributors ranked by sustainability points</p>
+        </div>
+
+        <!-- ── Controls ── -->
+        <div class="controls">
+            <div class="search-container">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="M21 21L16.65 16.65"/>
+                </svg>
+                <input type="text" class="search-input" id="searchInput" placeholder="Search contributors…">
+            </div>
+            <button class="refresh-btn" id="refreshBtn">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none"
+                     stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/>
+                    <path d="M21 3v5h-5"/>
+                    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/>
+                    <path d="M8 16H3v5"/>
+                </svg>
+                Refresh
+            </button>
+        </div>
+
+        <!-- ── Column Headers ── -->
+        <div class="list-header">
+            <span style="text-align:center;">Rank</span>
+            <span></span>
+            <span>Contributor</span>
+            <span class="col-points">Points</span>
+        </div>
+
+        <!-- ── Leaderboard ── -->
+        <div class="leaderboard" id="leaderboard">
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                Loading leaderboard…
+            </div>
+        </div>
+
+    </div><!-- /.container -->
+
+    <script>
+        /* ─── State ─────────────────────────────────────────────────── */
+        const searchInput = document.getElementById('searchInput');
+        const refreshBtn  = document.getElementById('refreshBtn');
+        const leaderboard = document.getElementById('leaderboard');
+        const loading     = document.getElementById('loading');
+        let allUsers = [];
+
+        /* ─── Rank class map (unchanged) ────────────────────────────── */
+        const rankClasses = {
+            'Iron':      'rank-Iron',
+            'Bronze':    'rank-Bronze',
+            'Silver':    'rank-Silver',
+            'Gold':      'rank-Gold',
+            'Platinum':  'rank-Platinum',
+            'Diamond':   'rank-Diamond',
+            'Ascendant': 'rank-Ascendant',
+            'Immortal':  'rank-Immortal',
+            'Radiant':   'rank-Radiant'
+        };
+
+        /* ─── Avatar helpers (unchanged logic) ──────────────────────── */
+        function generateAvatar(username) {
+            let hash = 0;
+            for (let i = 0; i < username.length; i++) {
+                hash = username.charCodeAt(i) + ((hash << 5) - hash);
+            }
+            // Shift to greener hues (100-160) for eco aesthetic
+            const base = ((hash % 120) + 120) % 360;
+            return `hsl(${base}, 45%, 35%)`;
+        }
+
+        function createAvatar(username) {
+            const el = document.createElement('div');
+            el.className = 'avatar';
+            el.style.background = generateAvatar(username);
+            el.textContent = username.charAt(0).toUpperCase();
+            return el;
+        }
+
+        function createRankBadge(rank) {
+            const el = document.createElement('span');
+            el.className = `rank-badge ${rankClasses[rank] || 'rank-Iron'}`;
+            el.textContent = rank;
+            return el;
+        }
+
+        function extractPoints(user) { return user.points || 0; }
+
+        /* ─── Render (unchanged logic) ──────────────────────────────── */
+        function renderLeaderboard(users, searchTerm = '') {
+            leaderboard.innerHTML = '';
+
+            let filtered = users;
+            if (searchTerm) {
+                filtered = users.filter(u =>
+                    u.username.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+            }
+
+            if (filtered.length === 0) {
+                leaderboard.innerHTML = `
+                    <div class="no-results">
+                        <svg class="no-results-icon" viewBox="0 0 24 24">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="M21 21L16.65 16.65"/>
+                            <path d="M8 11h6M11 8v6"/>
+                        </svg>
+                        No contributors found matching your search.
+                    </div>`;
+                return;
+            }
+
+            filtered.forEach((user, index) => {
+                const row = document.createElement('div');
+                row.className = `player-row ${index < 3 ? `top-${index + 1}` : ''}`;
+
+                const points = extractPoints(user);
+                const rank   = user.rank || 'Iron';
+                const posLabel = `<span class="rank-position">#${index + 1}</span>`;
+
+                row.innerHTML = `
+                    ${posLabel}
+                    ${createAvatar(user.username).outerHTML}
+                    <div class="player-info">
+                        <div class="username">${user.username}</div>
+                        <div class="rank-points">
+                            ${createRankBadge(rank).outerHTML}
+                        </div>
+                    </div>
+                    <div>
+                        <div class="points">${points.toLocaleString()}</div>
+                        <span class="points-label">pts</span>
+                    </div>
+                `;
+
+                leaderboard.appendChild(row);
+            });
+        }
+
+        /* ─── Fetch (unchanged logic) ───────────────────────────────── */
+        async function fetchUsers() {
+            try {
+                loading.style.display = 'flex';
+                const response = await fetch('/get_users');
+                if (!response.ok) throw new Error('Failed to fetch users');
+
+                const users = await response.json();
+                allUsers = users
+                    .sort((a, b) => extractPoints(b) - extractPoints(a))
+                    .slice(0, 50);
+
+                renderLeaderboard(allUsers);
+            } catch (error) {
+                console.error('Error fetching users:', error);
+                leaderboard.innerHTML = `
+                    <div class="no-results">
+                        <svg class="no-results-icon" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 8v4M12 16h.01"/>
+                        </svg>
+                        Failed to load leaderboard. Please try refreshing.
+                    </div>`;
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        /* ─── Event Listeners (unchanged) ──────────────────────────── */
+        searchInput.addEventListener('input', e => renderLeaderboard(allUsers, e.target.value));
+        refreshBtn.addEventListener('click', fetchUsers);
+
+        fetchUsers();
+
+        /* ─── Custom Cursor ─────────────────────────────────────────── */
+        const cursor = document.getElementById('cursor');
+        document.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top  = e.clientY + 'px';
+        });
+
+        document.querySelectorAll('button, a, input, select, textarea').forEach(el => {
+            el.addEventListener('mouseenter', () => cursor.classList.add('grow'));
+            el.addEventListener('mouseleave', () => cursor.classList.remove('grow'));
+        });
+
+        /* ─── Click Ripple (unchanged logic) ────────────────────────── */
+        document.addEventListener('click', e => {
+            if (e.target.closest('nav a, .refresh-btn')) return;
+
+            const ripple = document.createElement('div');
+            ripple.style.cssText = `
+                position:fixed;
+                left:${e.clientX}px;
+                top:${e.clientY}px;
+                width:8px; height:8px;
+                background:rgba(74,171,109,0.4);
+                border-radius:50%;
+                transform:translate(-50%,-50%);
+                pointer-events:none;
+                z-index:9998;
+                animation:ripple 0.6s ease-out forwards;
+            `;
+            document.body.appendChild(ripple);
+            setTimeout(() => ripple.remove(), 600);
+        });
+
+        // Inject ripple keyframe
+        const styleTag = document.createElement('style');
+        styleTag.textContent = `@keyframes ripple { to { transform: translate(-50%,-50%) scale(50); opacity:0; } }`;
+        document.head.appendChild(styleTag);
+    </script>
+</body>
+</html>
