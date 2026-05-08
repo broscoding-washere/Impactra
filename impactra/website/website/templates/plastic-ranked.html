@@ -116,7 +116,7 @@ body::after{
     backdrop-filter:blur(18px);
 }
 
-
+.rank-icon{font-size:3.6em;margin-bottom:6px}
 .rank-name{font-size:2.1em;font-weight:700;margin-bottom:12px;font-family:var(--font-display)}
 
 .progress-bar{
@@ -207,7 +207,7 @@ body::after{
 <div class="container">
 
 <div class="rank-header">
-    
+    <div id="rankIcon" class="rank-icon">🥉</div>
     <div id="rankName" class="rank-name">Iron</div>
 
     <div class="progress-bar">
@@ -245,7 +245,9 @@ function fetchDailyCap(){
         updateDailyDisplay();
     })
     .catch(err => console.error(err));
+}
 
+// ITEMS
 const items = [
     {name:'Bottle',points:25,icon:''},
     {name:'Bag',points:18,icon:''},
