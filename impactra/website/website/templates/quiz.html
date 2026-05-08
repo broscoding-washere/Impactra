@@ -49,7 +49,7 @@
     scroll-behavior: smooth;
   }
 
-  /* ── Header ── */
+  /* Header  */
   .site-header {
     text-align: center;
     margin-bottom: 40px;
@@ -92,7 +92,7 @@
     opacity: 0.9;
   }
 
-  /* ── Card ── */
+  /* Card */
   .quiz-card {
     background: rgba(15, 25, 21, 0.85);
     border-radius: var(--radius-card);
@@ -107,7 +107,7 @@
     backdrop-filter: blur(16px);
   }
 
-  /* ── Progress ── */
+  /* Progress */
   .quiz-meta {
     display: flex;
     align-items: center;
@@ -151,7 +151,7 @@
     letter-spacing: 0.3px;
   }
 
-  /* ── SDG Tag ── */
+  /* SDG Tag */
   .sdg-tag {
     display: inline-flex;
     align-items: center;
@@ -177,7 +177,7 @@
     box-shadow: 0 2px 6px rgba(4, 120, 87, 0.3);
   }
 
-  /* ── Question ── */
+  /* Question */
   .question-text {
     font-family: 'Poppins', sans-serif;
     font-size: clamp(18px, 3.5vw, 22px);
@@ -188,7 +188,7 @@
     min-height: 60px;
   }
 
-  /* ── Options ── */
+  /* Options */
   .options-grid {
     display: flex;
     flex-direction: column;
@@ -279,7 +279,7 @@
     color: #0f1915;
   }
 
-  /* ── Feedback ── */
+  /* Feedback */
   .feedback {
     margin-top: 18px;
     min-height: 20px;
@@ -322,7 +322,7 @@
     color: #d46f63;
   }
 
-  /* ── Footer row ── */
+  /* Footer row */
   .footer-row {
     display: flex;
     justify-content: flex-end;
@@ -359,7 +359,7 @@
     cursor: not-allowed;
   }
 
-  /* ── Result ── */
+  /* Result */
   .result-screen {
     display: none;
     text-align: center;
@@ -453,14 +453,14 @@
     transform: translateY(0px);
   }
 
-  /* ── Divider ── */
+  
   .divider {
     border: none;
     border-top: 1px solid rgba(167, 243, 208, 0.25);
     margin: 26px 0 0;
   }
 
-  /* ── Animations ── */
+  
   @keyframes fadeDown {
     from {
       opacity: 0;
@@ -636,7 +636,7 @@
     </div>
   </div>
 
-  <!-- Result screen -->
+  
   <div class="result-screen" id="resultScreen">
     <div class="result-circle" id="resultCircle"></div>
     <p class="result-title" id="resultTitle"></p>
@@ -648,9 +648,9 @@
 </div>
 
 <script>
-// ─────────────────────────────────────────────
+
 //  100 SDG QUESTIONS — 5–6 per goal (SDG 1–17)
-// ─────────────────────────────────────────────
+
 const ALL_QUESTIONS = [
   // SDG 1 — No Poverty
   { sdg:1, q:"What percentage of the world's population lived in extreme poverty in 2023?", opts:["About 8%","About 20%","About 35%","About 50%"], ans:"About 8%" },
@@ -789,9 +789,7 @@ const ALL_QUESTIONS = [
   { sdg:17, q:"Data monitoring and accountability for SDG implementation are addressed in SDG 17 target ____.", opts:["17.14","17.17","17.18","17.19"], ans:"17.19" },
 ];
 
-// ─────────────────────────────────────────────
-//  QUIZ ENGINE
-// ─────────────────────────────────────────────
+
 const SDG_NAMES = {
   1:"No Poverty", 2:"Zero Hunger", 3:"Good Health & Well-being",
   4:"Quality Education", 5:"Gender Equality", 6:"Clean Water & Sanitation",
@@ -902,7 +900,7 @@ function showResult() {
 
 initQuiz();
 
-// Custom Cursor
+
 const cursor = document.getElementById('cursor');
 document.addEventListener('mousemove', (e) => {
   cursor.style.left = e.clientX + 'px';
@@ -914,7 +912,7 @@ document.querySelectorAll('button, a, input, select, textarea').forEach(el => {
   el.addEventListener('mouseleave', () => cursor.classList.remove('grow'));
 });
 
-// Click ripple effect
+// ripple effect
 document.addEventListener('click', (e) => {
   if (e.target.closest('nav a, button')) return; // Skip ripple on nav/buttons
   
@@ -936,7 +934,7 @@ document.addEventListener('click', (e) => {
   setTimeout(() => ripple.remove(), 600);
 });
 
-// Add ripple animation
+
 const style = document.createElement('style');
 style.textContent = `@keyframes ripple { to { transform: translate(-50%, -50%) scale(50); opacity: 0; } }`;
 document.head.appendChild(style);
