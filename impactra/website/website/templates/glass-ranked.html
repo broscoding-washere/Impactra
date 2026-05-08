@@ -116,7 +116,7 @@
             backdrop-filter:blur(18px);
         }
 
-        .rank-icon{font-size:3.6em;margin-bottom:6px}
+        
         .rank-name{font-size:2.1em;font-weight:700;margin-bottom:12px;font-family:var(--font-display)}
 
         .progress-bar{
@@ -210,7 +210,7 @@
 <div class="container">
 
     <div class="rank-header">
-        <div class="rank-icon" id="rankIcon">🥉</div>
+       
         <div class="rank-name" id="rankName">Iron</div>
 
         <div class="progress-bar">
@@ -295,14 +295,14 @@ function getNextRank(points){
     return rankOrder[idx + 1] || null;
 }
 
-// ✅ INIT
+// Init
 function init(){
     createButtons();
     fetchData();
     fetchDailyCap();
 }
 
-// ✅ CREATE BUTTONS
+
 function createButtons(){
     const container = document.getElementById('wasteButtons');
     container.innerHTML = "";
@@ -316,7 +316,7 @@ function createButtons(){
     });
 }
 
-// ✅ CLICK HANDLER
+// Click Handler
 function attemptDispose(item){
 
     if(dailyPoints >= dailyCap){
@@ -375,7 +375,7 @@ function fetchData(){
 
         document.getElementById('totalPoints').textContent  = points;
         document.getElementById('rankName').textContent     = rank;
-        document.getElementById('rankIcon').textContent     = icons[rank] ?? '🥉';
+        
         document.getElementById('progressFill').style.width = progress + "%";
         document.getElementById('progressText').textContent =
             points + " / " + (nextRank ? nextMin : "MAX");
@@ -385,13 +385,13 @@ function fetchData(){
     .catch(err => console.error(err));
 }
 
-// ✅ UPDATE STREAK DISPLAY
+// Update streak
 function updateStreakDisplay(){
     document.getElementById('streakInfo').textContent = `Streak: ${streak} | Today: ${dailyPoints}/${dailyCap}`;
 }
 
 
-// ✅ START
+
 init();
 
 </script>
