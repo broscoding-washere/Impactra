@@ -207,7 +207,7 @@ body::after{
 <div class="container">
 
 <div class="rank-header">
-    <div id="rankIcon" class="rank-icon">🥉</div>
+    
     <div id="rankName" class="rank-name">Iron</div>
 
     <div class="progress-bar">
@@ -232,7 +232,7 @@ body::after{
 
 const username = localStorage.getItem("username");
 
-// DAILY CAP
+// daily cap
 let dailyCap = 100;
 let dailyPoints = 0;
 
@@ -247,7 +247,7 @@ function fetchDailyCap(){
     .catch(err => console.error(err));
 }
 
-// ITEMS
+
 const items = [
     {name:'Can',points:35,icon:''},
     {name:'Nail',points:20,icon:''},
@@ -256,7 +256,7 @@ const items = [
     {name:'Pipe',points:40,icon:''}
 ];
 
-// RANK SYSTEM
+
 const ranks = {
     'Iron':{min:0,max:99},
     'Bronze':{min:100,max:249},
