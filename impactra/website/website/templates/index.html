@@ -6,7 +6,7 @@
     <title>Dashboard - Waste Management</title>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* ─── CSS Variables (Liquid Glass) ───────────────────────────────────────── */
+        /* CSS Variables */
         :root {
             --black-900:   #050807;
             --black-850:   #0a0f0d;
@@ -37,7 +37,7 @@
             --font-body:    'Plus Jakarta Sans', sans-serif;
         }
 
-        /* ─── Reset & Base ──────────────────────────────────────── */
+        /* Reset & Base */
         *, *::before, *::after {
             margin: 0; padding: 0;
             box-sizing: border-box;
@@ -55,7 +55,7 @@
             min-height: 100vh;
         }
 
-        /* ─── Custom Cursor ─────────────────────────────────────── */
+        /* Custom Cursor */
         .cursor {
             position: fixed;
             width: 14px;
@@ -75,7 +75,7 @@
             background: rgba(143, 201, 160, 0.4);
         }
 
-        /* ─── Page Background ───────────────────────────────────── */
+       
         .bg-layer {
             position: fixed;
             inset: 0;
@@ -83,7 +83,7 @@
             pointer-events: none;
         }
 
-        /* Radial mesh gradient */
+        /* lil mesh  */
         .bg-layer::before {
             content: '';
             position: absolute;
@@ -95,7 +95,7 @@
             linear-gradient(170deg, #050807 0%, #0a100d 45%, #060a08 100%);
         }
 
-        /* Subtle noise texture */
+        
         .bg-layer::after {
             content: '';
             position: absolute;
@@ -104,7 +104,7 @@
             opacity: 0.6;
         }
 
-        /* ─── Grid overlay ──────────────────────────────────────── */
+        
         .grid-overlay {
             position: fixed;
             inset: 0;
@@ -116,7 +116,7 @@
             background-size: 64px 64px;
         }
 
-        /* ─── Orb accents ───────────────────────────────────────── */
+        /* Orb in the background */
         .orb {
             position: fixed;
             border-radius: 50%;
@@ -145,10 +145,10 @@
             100% { transform: translate(-30px, -50px) scale(0.92); filter: blur(85px); opacity: 0.5; }
         }
 
-        /* ─── All content sits above bg layers ──────────────────── */
+        
         header, .hero, .cards-section { position: relative; z-index: 10; }
 
-        /* ─── Header / Nav (Floating Glass Dock) ──────────────────────────────────────── */
+        
         header {
             position: fixed;
             top: 0;
@@ -173,7 +173,7 @@
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(110, 200, 170, 0.2);
         }
 
-        /* Logo mark */
+       
         .logo-mark {
             display: flex;
             align-items: center;
@@ -238,7 +238,7 @@
 
         nav a:hover::after { width: calc(100% - 32px); }
 
-        /* ─── Hero ──────────────────────────────────────────────── */
+        
         .hero {
             min-height: 100vh;
             display: flex;
@@ -250,7 +250,7 @@
             overflow: hidden;
         }
 
-        /* Status badge */
+        /* Status */
         .hero-badge {
             display: inline-flex;
             align-items: center;
@@ -326,7 +326,7 @@
             animation: fadeUp 1s ease 0.54s forwards;
         }
 
-        /* CTA Button */
+        
         .cta-button {
             display: inline-flex;
             align-items: center;
@@ -372,7 +372,7 @@
 
         .cta-button:hover .cta-arrow { transform: translateX(4px); }
 
-        /* ─── Divider ────────────────────────────────────────────── */
+       
         .section-divider {
             width: 100%;
             height: 1px;
@@ -380,7 +380,7 @@
             margin: 0 auto;
         }
 
-        /* ─── Cards Section ─────────────────────────────────────── */
+        
         .cards-section {
             padding: 100px 56px 120px;
             max-width: 1280px;
@@ -426,7 +426,7 @@
             line-height: 1.15;
         }
 
-        /* ─── Cards Grid ────────────────────────────────────────── */
+       
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -451,7 +451,7 @@
             box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(110, 200, 170, 0.12);
         }
 
-        /* Colored top accent stripe */
+        
         .card::before {
             content: '';
             position: absolute;
@@ -462,7 +462,7 @@
             transition: opacity 0.4s ease;
         }
 
-        /* Inner glow on hover */
+        
         .card::after {
             content: '';
             position: absolute;
@@ -517,7 +517,7 @@
             transform: scale(1.15);
         }
 
-        /* Card number tag */
+       
         .card-tag {
             position: absolute;
             top: 28px; right: 28px;
@@ -545,7 +545,7 @@
             max-width: 260px;
         }
 
-        /* Card chevron */
+        
         .card-footer {
             display: flex;
             align-items: center;
@@ -583,7 +583,7 @@
             transform: translateX(4px);
         }
 
-        /* ─── Floating particles ────────────────────────────────── */
+       
         .particle {
             position: absolute;
             border-radius: 50%;
@@ -597,17 +597,17 @@
             50%       { transform: translateY(-24px) rotate(180deg); opacity: 0.3; }
         }
 
-        /* ─── Animations ────────────────────────────────────────── */
+        /* Animations */
         @keyframes fadeUp {
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ─── Ripple ────────────────────────────────────────────── */
+      
         @keyframes ripple {
             to { transform: translate(-50%, -50%) scale(50); opacity: 0; }
         }
 
-        /* ─── Responsive ────────────────────────────────────────── */
+       
         @media (max-width: 768px) {
             header { padding: 0 24px; }
 
@@ -632,7 +632,7 @@
     </style>
 </head>
 <body>
-    <!-- Background layers -->
+    <!-- Background -->
     <div class="bg-layer"></div>
     <div class="grid-overlay"></div>
     <div class="orb orb-1"></div>
@@ -641,7 +641,7 @@
     <!-- Custom Cursor -->
     <div class="cursor" id="cursor"></div>
 
-    <!-- ─── Header ──────────────────────────────────────────── -->
+   
     <header>
         <a href="#home" class="logo-mark">
             <div class="logo-icon">WL</div>
@@ -659,7 +659,7 @@
         </nav>
     </header>
 
-    <!-- ─── Hero ─────────────────────────────────────────────── -->
+    
     <section class="hero" id="home">
         <div class="hero-badge">
             <span class="badge-dot"></span>
@@ -686,7 +686,7 @@
 
     <div class="section-divider"></div>
 
-    <!-- ─── Cards Section ─────────────────────────────────────── -->
+   
     <section class="cards-section" id="features">
         <div class="section-header">
             <span class="section-label">Core Modules</span>
@@ -740,7 +740,7 @@
 
     <script>
             
-        /* ── Custom Cursor ─────────────────────────────────────── */
+        
         const cursor = document.getElementById('cursor');
         document.addEventListener('mousemove', (e) => {
             cursor.style.left = e.clientX + 'px';
@@ -758,7 +758,7 @@
             link.addEventListener('mouseleave', () => cursor.classList.remove('grow'));
         });
 
-        /* ── Click Ripple ──────────────────────────────────────── */
+        /* Ripple effect*/
         document.addEventListener('click', (e) => {
             if (e.target.closest('nav a, .cta-button')) return;
             const ripple = document.createElement('div');
@@ -778,14 +778,14 @@
             setTimeout(() => ripple.remove(), 600);
         });
 
-        /* ── Parallax ──────────────────────────────────────────── */
+        /* Parallax */
         window.addEventListener('scroll', () => {
             const scrolled = window.pageYOffset;
             const hero = document.querySelector('.hero');
             if (hero) hero.style.transform = `translateY(${scrolled * 0.5}px)`;
         });
 
-        /* ── Floating Particles ────────────────────────────────── */
+        
         function createParticle() {
             const particle = document.createElement('div');
             particle.className = 'particle';
@@ -802,7 +802,7 @@
         }
         setInterval(createParticle, 320);
 
-        /* ── Smooth Scroll: Home ───────────────────────────────── */
+        
         document.querySelectorAll('a[href="#home"]').forEach(anchor => {
             anchor.addEventListener('click', (e) => {
                 e.preventDefault();
@@ -810,7 +810,7 @@
             });
         });
 
-        /* ── Cards: open new page ──────────────────────────────── */
+        
         document.querySelectorAll('.card').forEach(card => {
             card.addEventListener('click', function (e) {
                 e.stopPropagation();
