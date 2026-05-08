@@ -74,7 +74,7 @@
             position: relative;
         }
 
-        /* ─── Ambient Background ─────────────────────────────── */
+        /* Ambient Background */
         body::before {
             content: '';
             position: fixed;
@@ -100,7 +100,7 @@
             z-index: 0;
         }
 
-        /* ─── Layout ─────────────────────────────────────────── */
+        
         .container {
             max-width: 1160px;
             margin: 0 auto;
@@ -109,7 +109,7 @@
             z-index: 1;
         }
 
-        /* ─── Sync Toast ─────────────────────────────────────── */
+       
         .sync-status {
             position: fixed;
             top: 24px;
@@ -140,7 +140,7 @@
             color: #f4a4a4;
         }
 
-        /* ─── Header ─────────────────────────────────────────── */
+        
         .header {
             text-align: center;
             margin-bottom: 48px;
@@ -191,7 +191,7 @@
             letter-spacing: 0.01em;
         }
 
-        /* ─── User Info Bar ───────────────────────────────────── */
+        
         .user-info {
             display: none;
             background: var(--glass-bg);
@@ -243,7 +243,7 @@
             flex-shrink: 0;
         }
 
-        /* ─── Waste Cards Grid ───────────────────────────────── */
+        
         .waste-type-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -298,7 +298,7 @@
         }
         .waste-card:hover::after { opacity: 1; }
 
-        /* Individual card accent colors */
+        
         .ewaste::before   { background: linear-gradient(90deg, var(--ewaste-color), #c8956a); }
         .ewaste::after    { background: var(--ewaste-color); }
         .ewaste:hover     { box-shadow: var(--shadow-card), 0 0 40px rgba(160,120,90,0.2); }
@@ -319,7 +319,7 @@
         .glass-card::after   { background: var(--glass-color); }
         .glass-card:hover    { box-shadow: var(--shadow-card), 0 0 40px rgba(106,176,200,0.2); }
 
-        /* Staggered animation delays */
+        
         .waste-card:nth-child(1) { animation-delay: 0.1s; }
         .waste-card:nth-child(2) { animation-delay: 0.18s; }
         .waste-card:nth-child(3) { animation-delay: 0.26s; }
@@ -378,7 +378,7 @@
             font-weight: 500;
         }
 
-        /* ─── Stats Panel ─────────────────────────────────────── */
+    
         .stats {
             background: var(--glass-bg);
             border: 1px solid var(--glass-border);
@@ -473,7 +473,7 @@
             box-shadow: 0 4px 16px rgba(82,183,136,0.15);
         }
 
-        /* ─── Animations ──────────────────────────────────────── */
+       
         @keyframes fadeSlideDown {
             from { opacity: 0; transform: translateY(-20px); }
             to   { opacity: 1; transform: translateY(0); }
@@ -489,13 +489,13 @@
             50%       { opacity: 0.5; transform: scale(0.85); }
         }
 
-        /* ─── Loading state ───────────────────────────────────── */
+      
         .loading {
             opacity: 0.5;
             pointer-events: none;
         }
 
-        /* ─── Responsive ──────────────────────────────────────── */
+        
         @media (max-width: 860px) {
             .waste-type-grid {
                 grid-template-columns: repeat(2, 1fr);
@@ -532,7 +532,7 @@
             <p class="header-sub">Master each waste category to climb the global ranks</p>
         </div>
 
-        <!-- User Info -->
+       
         <div class="user-info" id="userInfo">
             <div class="user-avatar">🌿</div>
             <div class="user-details">
@@ -542,7 +542,7 @@
             <div class="user-status-dot"></div>
         </div>
 
-        <!-- Waste Type Cards -->
+         
         <div class="waste-type-grid">
             <a href="ewaste-ranked.html" class="waste-card ewaste">
                 <span class="card-icon">EW</span>
@@ -586,7 +586,7 @@
             </a>
         </div>
 
-        <!-- Stats Panel -->
+        
         <div class="stats">
             <div class="stat-item">
                 <div class="stat-label">Overall Rank</div>
@@ -650,7 +650,7 @@
                 return data;
             } catch (err) {
                 console.error('Fetch failed:', err);
-                showSync('❌ Failed to fetch data', true);
+                showSync(' Failed to fetch data', true);
                 return null;
             }
         }
@@ -700,10 +700,10 @@
             }
         }
 
-        // Auto load
+        
         updateRanked();
 
-        // Auto refresh every 10s
+        // refresh every 10s
         setInterval(updateRanked, 10000);
 
         // Refresh when tab becomes active
