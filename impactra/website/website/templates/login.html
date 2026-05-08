@@ -10,7 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
 
     <style>
-        /* ─── Design Tokens (Liquid Glass) ─────────────────────────────────────────────── */
+         
         :root {
             --c-bg:           #050807;
             --c-bg2:          #0a0e0c;
@@ -51,7 +51,7 @@
             --font-body:      'DM Sans', sans-serif;
         }
 
-        /* ─── Reset & Base ──────────────────────────────────────────────── */
+       
         *, *::before, *::after {
             margin: 0; padding: 0;
             box-sizing: border-box;
@@ -72,7 +72,7 @@
             position: relative;
         }
 
-        /* ─── Ambient Background Scene ──────────────────────────────────── */
+       
         .bg-scene {
             position: fixed;
             inset: 0;
@@ -81,7 +81,7 @@
             overflow: hidden;
         }
 
-        /* Mesh gradient */
+      
         .bg-scene::before {
             content: '';
             position: absolute;
@@ -92,7 +92,7 @@
             radial-gradient(ellipse 45% 45% at 50% 50%, rgba(142,230,181,0.1) 0%, rgba(12,22,18,0.88) 100%);
         }
 
-        /* Subtle grid */
+      
         .bg-scene::after {
             content: '';
             position: absolute;
@@ -104,7 +104,7 @@
             mask-image: radial-gradient(ellipse 85% 85% at 50% 50%, black 15%, transparent 72%);
         }
 
-        /* Floating orbs */
+        
         .orb {
             position: absolute;
             border-radius: 50%;
@@ -135,7 +135,7 @@
             100% { transform: translate(45px, -55px) scale(1.15); opacity: 0.7; }
         }
 
-        /* ─── Brand Mark ────────────────────────────────────────────────── */
+        
         .brand-mark {
             position: fixed;
             top: 32px; left: 40px;
@@ -177,7 +177,7 @@
             color: var(--c-green-light);
         }
 
-        /* ─── Status badge ──────────────────────────────────────────────── */
+        
         .status-badge {
             position: fixed;
             top: 36px; right: 40px;
@@ -214,7 +214,7 @@
             letter-spacing: 0.3px;
         }
 
-        /* ─── Main Container ─────────────────────────────────────────────── */
+        /* Main Container */
         .container {
             position: relative;
             z-index: 5;
@@ -242,7 +242,7 @@
             to   { opacity: 1; transform: translateY(0); }
         }
 
-        /* ─── Form Containers ───────────────────────────────────────────── */
+       
         .form-container {
             position: absolute;
             top: 0;
@@ -288,7 +288,7 @@
             50%, 100%  { opacity: 1; z-index: 5; }
         }
 
-        /* ─── Forms ─────────────────────────────────────────────────────── */
+        
         .container form {
             background: transparent;
             display: flex;
@@ -402,7 +402,7 @@
             stroke: var(--c-green-light);
         }
 
-        /* ─── Buttons ───────────────────────────────────────────────────── */
+        /* Buttons */
         .container button {
             font-family: var(--font-body);
             font-size: 13px;
@@ -419,7 +419,7 @@
             overflow: hidden;
         }
 
-        /* Primary CTA */
+        
         .btn-primary {
             background: linear-gradient(135deg, rgba(84,173,132,0.85) 0%, rgba(142,230,181,0.7) 60%, rgba(102,199,255,0.6) 100%);
             backdrop-filter: blur(var(--blur-sm)) saturate(160%);
@@ -449,7 +449,7 @@
         .btn-primary:hover::before { opacity: 1; }
         .btn-primary:active { transform: translateY(-1px); }
 
-        /* Ghost / hidden button for toggle panel */
+      
         .container button.hidden {
             background: transparent;
             color: var(--c-white);
@@ -463,7 +463,7 @@
             transform: translateY(-1px);
         }
 
-        /* ─── Toggle / Overlay Panel ─────────────────────────────────────── */
+        
         .toggle-container {
             position: absolute;
             top: 0;
@@ -489,7 +489,7 @@
             transform: translateX(0);
             transition: all var(--transition);
 
-            /* Eco-industrial panel */
+           
             background:
                 radial-gradient(ellipse 100% 80% at 30% 100%, rgba(30,92,53,0.6) 0%, transparent 65%),
                 radial-gradient(ellipse 60% 60% at 80% 10%, rgba(42,122,73,0.3) 0%, transparent 60%),
@@ -501,7 +501,7 @@
             transform: translateX(50%);
         }
 
-        /* Overlay decorative elements */
+       
         .toggle::before {
             content: '';
             position: absolute;
@@ -544,7 +544,7 @@
         .container.active .toggle-left { transform: translateX(0); }
         .toggle-right { right: 0; transform: translateX(0); }
 
-        /* Panel decorative icon */
+        /* Panel icon */
         .panel-icon {
             width: 60px; height: 60px;
             margin-bottom: 24px;
@@ -578,7 +578,7 @@
             max-width: 200px;
         }
 
-        /* Decorative stat */
+        
         .panel-stat {
             display: flex;
             align-items: center;
@@ -604,12 +604,12 @@
             letter-spacing: 0.3px;
         }
 
-        /* ─── Scrollbar ──────────────────────────────────────────────────── */
+       
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--c-bg); }
         ::-webkit-scrollbar-thumb { background: var(--c-green-deep); border-radius: 3px; }
 
-        /* ─── Responsive ─────────────────────────────────────────────────── */
+    
         @media (max-width: 640px) {
             .container {
                 width: 100vw;
@@ -633,7 +633,7 @@
 
 <body>
 
-    <!-- Ambient background -->
+    <!--background -->
     <div class="bg-scene">
         <div class="orb orb-1"></div>
         <div class="orb orb-2"></div>
@@ -661,10 +661,10 @@
         <span>Systems Operational</span>
     </div>
 
-    <!-- ═══ MAIN CONTAINER ═══════════════════════════════════════════════ -->
+    <!-- main container -->
     <div class="container" id="container">
 
-        <!-- ── REGISTER FORM ── -->
+        <!-- ── forms ── -->
         <div class="form-container sign-up">
             <form id="registerForm">
                 <p class="form-eyebrow">New Member</p>
@@ -697,7 +697,7 @@
             </form>
         </div>
 
-        <!-- ── LOGIN FORM ── -->
+        
         <div class="form-container sign-in">
             <form id="loginForm">
                 <p class="form-eyebrow">Welcome Back</p>
@@ -730,11 +730,11 @@
             </form>
         </div>
 
-        <!-- ── TOGGLE OVERLAY ── -->
+       
         <div class="toggle-container">
             <div class="toggle">
 
-                <!-- Left panel (shown when on Register) -->
+                <!-- Left panel -->
                 <div class="toggle-panel toggle-left">
                     <div class="panel-icon">
                         <svg viewBox="0 0 64 64">
@@ -753,7 +753,7 @@
                     <button class="hidden" id="loginToggle">Sign In</button>
                 </div>
 
-                <!-- Right panel (shown when on Login) -->
+                <!-- Right panel  -->
                 <div class="toggle-panel toggle-right">
                     <div class="panel-icon">
                         <svg viewBox="0 0 64 64">
@@ -774,12 +774,12 @@
 
             </div>
         </div>
-        <!-- ══════════════════════════════════════════════════════════════ -->
+       
 
-    </div><!-- /.container -->
+    </div> 
 
     <script>
-        /* ─── Toggle Logic (unchanged) ─────────────────────────────────── */
+       
         const container      = document.getElementById('container');
         const loginToggle    = document.getElementById('loginToggle');
         const registerToggle = document.getElementById('registerToggle');
@@ -787,7 +787,7 @@
         loginToggle.addEventListener('click',    () => container.classList.remove('active'));
         registerToggle.addEventListener('click', () => container.classList.add('active'));
 
-        /* ─── Login Form (unchanged logic) ─────────────────────────────── */
+       // Login Form
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
@@ -808,7 +808,7 @@
                 .catch(err => { console.error(err); alert("Server error"); });
         });
 
-        /* ─── Register Form (unchanged logic) ──────────────────────────── */
+        /* Register Form */
         document.getElementById('registerForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const formData = new FormData(this);
