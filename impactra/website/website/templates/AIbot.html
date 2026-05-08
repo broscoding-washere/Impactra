@@ -76,7 +76,7 @@
             overflow: hidden;
         }
 
-        /* ─── Ambient Background ────────────────────────────── */
+        /* Ambient Background */
         body::before {
             content: '';
             position: fixed;
@@ -101,7 +101,7 @@
             z-index: 0;
         }
 
-        /* ─── Custom Cursor ─────────────────────────────────── */
+        /* Custom Cursor */
         .cursor {
             position: fixed;
             width: 18px;
@@ -119,7 +119,7 @@
             background: rgba(82,183,136,0.3);
         }
 
-        /* ─── Main Container ────────────────────────────────── */
+        /*Main Container */
         .container {
             width: 100%;
             max-width: 760px;
@@ -147,7 +147,7 @@
             z-index: 2;
         }
 
-        /* ─── Header ────────────────────────────────────────── */
+        /* Header*/
         .header {
             background: var(--bg-elevated);
             border-bottom: 1px solid var(--border-subtle);
@@ -226,7 +226,7 @@
             white-space: nowrap;
         }
 
-        /* ─── Chat Area ─────────────────────────────────────── */
+        /* Chat Area */
         .chat-box {
             flex: 1;
             padding: 24px 24px 16px;
@@ -249,7 +249,7 @@
             border-radius: 4px;
         }
 
-        /* ─── Messages ──────────────────────────────────────── */
+        /* Messages */
         .message {
             max-width: 72%;
             padding: 13px 17px;
@@ -279,7 +279,7 @@
             padding-left: 20px;
         }
 
-        /* Left accent strip on AI bubbles */
+        
         .ai-message::before {
             content: '';
             position: absolute;
@@ -290,7 +290,7 @@
             opacity: 0.6;
         }
 
-        /* Typing indicator */
+        
         .typing {
             background: var(--bubble-ai-bg);
             border: 1px solid var(--border-subtle);
@@ -318,7 +318,7 @@
         .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
         .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
 
-        /* ─── Input Area ────────────────────────────────────── */
+        /*Input Area */
         .input-area {
             padding: 16px 20px 20px;
             display: flex;
@@ -377,7 +377,7 @@
             transform: scale(0.95);
         }
 
-        /* ─── Animations ────────────────────────────────────── */
+        /* Animations */
         @keyframes riseUp {
             from { opacity: 0; transform: translateY(30px) scale(0.97); }
             to   { opacity: 1; transform: translateY(0) scale(1); }
@@ -398,7 +398,7 @@
             40%            { transform: scale(1);   opacity: 1; }
         }
 
-        /* ─── Responsive ────────────────────────────────────── */
+        /* Responsive  */
         @media (max-width: 560px) {
             body { padding: 0; align-items: stretch; }
             .container {
@@ -447,7 +447,7 @@
 </div>
 
 <script>
-    // ── Custom Cursor ──────────────────────────────────────
+    // Custom Cursor
     const cursor = document.createElement('div');
     cursor.className = 'cursor';
     document.body.appendChild(cursor);
@@ -460,7 +460,7 @@
     document.addEventListener('mousedown', () => cursor.classList.add('clicking'));
     document.addEventListener('mouseup',   () => cursor.classList.remove('clicking'));
 
-    // ── Chat Setup ─────────────────────────────────────────
+    //Chat Setup
     const chatBox   = document.getElementById('chatBox');
     const userInput = document.getElementById('userInput');
     const sendBtn   = document.getElementById('sendBtn');
@@ -480,7 +480,7 @@
         addMessage('user', msg);
         userInput.value = '';
 
-        // Typing indicator
+       
         const typing = document.createElement('div');
         typing.className = 'message typing';
         typing.innerHTML = `
@@ -506,7 +506,7 @@
         chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    // ── AI Response Logic ──────────────────────────────────
+    // AI dataset
     function getAIResponse(q) {
         if (q.includes('hi') || q.includes('hello'))
             return 'Namaskar! Ask me about recycling, plastic, composting, SDG goals, or waste management.';
